@@ -85,36 +85,36 @@ const HomePage = () => {
             Our Services
           </h3>
           <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
-            <Card className='bg-primary/90'>
+            <Card className='bg-secondary '>
               <CardHeader>
-                <CardTitle className='flex items-center text-primary-foreground'>
+                <CardTitle className='flex items-center text-primary'>
                   <Scissors className='mr-2' />
                   Haircuts and Styling
                 </CardTitle>
               </CardHeader>
-              <CardContent className='text-primary-foreground'>
+              <CardContent className='text-primary'>
                 <p>Professional cuts and styles for all hair types.</p>
               </CardContent>
             </Card>
-            <Card className='bg-primary/90'>
+            <Card className='bg-secondary '>
               <CardHeader>
-                <CardTitle className='flex items-center text-primary-foreground'>
+                <CardTitle className='flex items-center text-primary'>
                   <Brush className='mr-2' />
                   Manicure and Pedicure
                 </CardTitle>
               </CardHeader>
-              <CardContent className='text-primary-foreground'>
+              <CardContent className='text-primary'>
                 <p>Pamper your hands and feet with our nail care services.</p>
               </CardContent>
             </Card>
-            <Card className='bg-primary/90'>
+            <Card className='bg-secondary '>
               <CardHeader>
-                <CardTitle className='flex items-center text-primary-foreground'>
+                <CardTitle className='flex items-center text-primary'>
                   <Sparkles className='mr-2' />
                   Facial Treatments
                 </CardTitle>
               </CardHeader>
-              <CardContent className='text-primary-foreground'>
+              <CardContent className='text-primary'>
                 <p>
                   Rejuvenate your skin with our specialized facial treatments.
                 </p>
@@ -128,24 +128,22 @@ const HomePage = () => {
             Contact Us
           </h3>
           <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-            <Card className='bg-primary/90'>
+            <Card className='bg-secondary'>
               <CardHeader>
-                <CardTitle className='text-primary-foreground'>
-                  Thomas
-                </CardTitle>
+                <CardTitle className='text-primary'>Thomas</CardTitle>
               </CardHeader>
-              <CardContent className='text-primary-foreground'>
+              <CardContent className='text-primary'>
                 <p className='flex items-center'>
                   <Phone className='mr-2' />
                   08123456789
                 </p>
               </CardContent>
             </Card>
-            <Card className='bg-primary/90'>
+            <Card className='bg-secondary'>
               <CardHeader>
-                <CardTitle className='text-primary-foreground'>Sekar</CardTitle>
+                <CardTitle className='text-primary'>Sekar</CardTitle>
               </CardHeader>
-              <CardContent className='text-primary-foreground'>
+              <CardContent className='text-primary'>
                 <p className='flex items-center'>
                   <Phone className='mr-2' />
                   08164829372
@@ -216,12 +214,9 @@ export function Reviews() {
         Customer Reviews
       </h3>
 
-      {/* Review Form */}
-      <Card className='bg-primary/90 mb-6'>
+      <Card className='bg-secondary mb-6'>
         <CardHeader>
-          <CardTitle className='text-primary-foreground'>
-            Leave a Review
-          </CardTitle>
+          <CardTitle className='text-primary'>Leave a Review</CardTitle>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -231,9 +226,7 @@ export function Reviews() {
                 name='customerName'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className='text-primary-foreground'>
-                      Name
-                    </FormLabel>
+                    <FormLabel className='text-primary'>Name</FormLabel>
                     <FormControl>
                       <Input placeholder='Your name' {...field} />
                     </FormControl>
@@ -246,9 +239,7 @@ export function Reviews() {
                 name='starRating'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className='text-primary-foreground'>
-                      Rating
-                    </FormLabel>
+                    <FormLabel className='text-primary'>Rating</FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
@@ -275,9 +266,7 @@ export function Reviews() {
                 name='comment'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className='text-primary-foreground'>
-                      Comment
-                    </FormLabel>
+                    <FormLabel className='text-primary'>Comment</FormLabel>
                     <FormControl>
                       <Textarea
                         placeholder='Tell us about your experience'
@@ -300,24 +289,23 @@ export function Reviews() {
         </CardContent>
       </Card>
 
-      {/* Display Reviews */}
       <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
         {reviews.map((review, index) => (
-          <Card key={index} className='bg-primary/90'>
+          <Card key={index} className='bg-secondary'>
             <CardHeader>
-              <CardTitle className='text-primary-foreground flex items-center justify-between'>
+              <CardTitle className='text-primary flex items-center justify-between'>
                 <span>{review.customerName}</span>
                 <span className='flex items-center'>
                   {[...Array(review.starRating)].map((_, i) => (
                     <Star
                       key={i}
-                      className='w-5 h-5 fill-primary text-primary-foreground'
+                      className='w-5 h-5 fill-primary text-primary'
                     />
                   ))}
                 </span>
               </CardTitle>
             </CardHeader>
-            <CardContent className='text-primary-foreground'>
+            <CardContent className='text-primary'>
               <p>{review.comment}</p>
             </CardContent>
           </Card>
