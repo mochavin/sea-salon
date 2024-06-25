@@ -1,50 +1,330 @@
-import { db } from '@/drizzle/db';
-import { currentUser } from '@clerk/nextjs/server';
-import { createUserMessage, deleteUserMessage } from './actions';
+'use client';
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Scissors, Brush, Sparkles, Phone, Star } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { useToast } from '@/components/ui/use-toast';
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 
-async function getUserMessage() {
-  const user = await currentUser();
-  if (!user) return null;
-  // throw new Error('User not found');
-  return db.query.UserMessages.findFirst({
-    where: (messages, { eq }) => eq(messages.user_id, user.id),
+const HomePage = () => {
+  return (
+    <div className='min-h-screen bg-secondary'>
+      <header className='bg-primary shadow-md'>
+        <div className='container mx-auto px-4 py-6 flex justify-between items-center'>
+          <h1 className='text-3xl font-bold text-secondary'>SEA Salon</h1>
+          <nav>
+            <ul className='flex space-x-4'>
+              <li>
+                <Link
+                  href='#services'
+                  className='text-secondary hover:text-white'
+                >
+                  Services
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href='#contact'
+                  className='text-secondary hover:text-white'
+                >
+                  Contact
+                </Link>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </header>
+
+      <section className='text-center mb-12 relative'>
+        <div className='relative w-full h-64 rounded-lg shadow-lg mb-6 overflow-hidden'>
+          <Image
+            src='/assets/banner.png'
+            alt='SEA Salon'
+            layout='fill'
+            objectFit='cover'
+            className='rounded-lg'
+          />
+        </div>
+        <div className='absolute inset-0 bg-primary/75 flex items-center justify-center'>
+          <div>
+            <h2 className='text-4xl font-bold text-secondary mb-4'>
+              Beauty and Elegance Redefined
+            </h2>
+            <p className='text-xl text-secondary'>
+              Welcome to SEA Salon, where we transform your look and boost your
+              confidence.
+            </p>
+          </div>
+        </div>
+      </section>
+      <main className='container mx-auto px-4 py-8'>
+        <section id='services' className='mb-12'>
+          <h3 className='text-2xl font-semibold text-primary mb-6'>
+            Our Services
+          </h3>
+          <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
+            <Card className='bg-primary/90'>
+              <CardHeader>
+                <CardTitle className='flex items-center text-primary-foreground'>
+                  <Scissors className='mr-2' />
+                  Haircuts and Styling
+                </CardTitle>
+              </CardHeader>
+              <CardContent className='text-primary-foreground'>
+                <p>Professional cuts and styles for all hair types.</p>
+              </CardContent>
+            </Card>
+            <Card className='bg-primary/90'>
+              <CardHeader>
+                <CardTitle className='flex items-center text-primary-foreground'>
+                  <Brush className='mr-2' />
+                  Manicure and Pedicure
+                </CardTitle>
+              </CardHeader>
+              <CardContent className='text-primary-foreground'>
+                <p>Pamper your hands and feet with our nail care services.</p>
+              </CardContent>
+            </Card>
+            <Card className='bg-primary/90'>
+              <CardHeader>
+                <CardTitle className='flex items-center text-primary-foreground'>
+                  <Sparkles className='mr-2' />
+                  Facial Treatments
+                </CardTitle>
+              </CardHeader>
+              <CardContent className='text-primary-foreground'>
+                <p>
+                  Rejuvenate your skin with our specialized facial treatments.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+
+        <section id='contact' className='mb-12'>
+          <h3 className='text-2xl font-semibold text-primary mb-6'>
+            Contact Us
+          </h3>
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+            <Card className='bg-primary/90'>
+              <CardHeader>
+                <CardTitle className='text-primary-foreground'>
+                  Thomas
+                </CardTitle>
+              </CardHeader>
+              <CardContent className='text-primary-foreground'>
+                <p className='flex items-center'>
+                  <Phone className='mr-2' />
+                  08123456789
+                </p>
+              </CardContent>
+            </Card>
+            <Card className='bg-primary/90'>
+              <CardHeader>
+                <CardTitle className='text-primary-foreground'>Sekar</CardTitle>
+              </CardHeader>
+              <CardContent className='text-primary-foreground'>
+                <p className='flex items-center'>
+                  <Phone className='mr-2' />
+                  08164829372
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+
+        <div className='text-center'>
+          <Button className='bg-primary hover:bg-primary/90 text-secondary'>
+            Book an Appointment
+          </Button>
+        </div>
+        <Reviews />
+      </main>
+
+      <footer className='bg-primary text-secondary py-4 mt-12'>
+        <div className='container mx-auto px-4 text-center'>
+          <p>&copy; 2024 SEA Salon. All rights reserved.</p>
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+const FormSchema = z.object({
+  customerName: z.string().min(2, {
+    message: 'Name must be at least 2 characters.',
+  }),
+  starRating: z
+    .string()
+    .refine((val) => ['1', '2', '3', '4', '5'].includes(val), {
+      message: 'Please select a star rating.',
+    }),
+  comment: z.string().min(10, {
+    message: 'Comment must be at least 10 characters.',
+  }),
+});
+export function Reviews() {
+  const [reviews, setReviews] = useState<any[]>([]);
+  const { toast } = useToast();
+
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      customerName: '',
+      starRating: '',
+      comment: '',
+    },
   });
-}
 
-export default async function Home() {
-  const existingMessage = await getUserMessage();
+  function onSubmit(data: z.infer<typeof FormSchema>) {
+    setReviews((prevReviews) => [
+      ...prevReviews,
+      { ...data, starRating: parseInt(data.starRating) },
+    ]);
+    toast({
+      title: 'Review submitted',
+      description: 'Thank you for your feedback!',
+    });
+    form.reset();
+  }
 
   return (
-    <main className='flex flex-col items-center justify-center min-h-screen'>
-      <h1 className='text-3xl font-bold mb-8'>Neon + Clerk Example</h1>
-      {existingMessage ? (
-        <div className='text-center'>
-          <p className='text-xl mb-4'>{existingMessage.message}</p>
-          <form action={deleteUserMessage}>
-            <button
-              type='submit'
-              className='bg-red-500 text-white px-4 py-2 rounded'
-            >
-              Delete Message
-            </button>
-          </form>
-        </div>
-      ) : (
-        <form action={createUserMessage} className='flex flex-col items-center'>
-          <input
-            type='text'
-            name='message'
-            placeholder='Enter a message'
-            className='border border-gray-300 rounded px-4 py-2 mb-4 w-64'
-          />
-          <button
-            type='submit'
-            className='bg-blue-500 text-white px-4 py-2 rounded'
-          >
-            Save Message
-          </button>
-        </form>
-      )}
-    </main>
+    <section id='reviews' className='my-12'>
+      <h3 className='text-2xl font-semibold text-primary mb-6'>
+        Customer Reviews
+      </h3>
+
+      {/* Review Form */}
+      <Card className='bg-primary/90 mb-6'>
+        <CardHeader>
+          <CardTitle className='text-primary-foreground'>
+            Leave a Review
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
+              <FormField
+                control={form.control}
+                name='customerName'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className='text-primary-foreground'>
+                      Name
+                    </FormLabel>
+                    <FormControl>
+                      <Input placeholder='Your name' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='starRating'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className='text-primary-foreground'>
+                      Rating
+                    </FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder='Select a rating' />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {[1, 2, 3, 4, 5].map((num) => (
+                          <SelectItem key={num} value={num.toString()}>
+                            {num} Star{num !== 1 ? 's' : ''}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='comment'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className='text-primary-foreground'>
+                      Comment
+                    </FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder='Tell us about your experience'
+                        className='resize-none'
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button
+                type='submit'
+                className='bg-primary hover:bg-primary/90 text-secondary'
+              >
+                Submit Review
+              </Button>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
+
+      {/* Display Reviews */}
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+        {reviews.map((review, index) => (
+          <Card key={index} className='bg-primary/90'>
+            <CardHeader>
+              <CardTitle className='text-primary-foreground flex items-center justify-between'>
+                <span>{review.customerName}</span>
+                <span className='flex items-center'>
+                  {[...Array(review.starRating)].map((_, i) => (
+                    <Star
+                      key={i}
+                      className='w-5 h-5 fill-primary text-primary-foreground'
+                    />
+                  ))}
+                </span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className='text-primary-foreground'>
+              <p>{review.comment}</p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </section>
   );
 }
+
+export default HomePage;

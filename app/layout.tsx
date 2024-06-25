@@ -10,6 +10,7 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import Provider from './Provider';
 import { cn } from '@/lib/utils';
+import { Toaster } from '@/components/ui/toaster';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -32,13 +33,9 @@ export default function RootLayout({
             inter.className
           )}
         >
-          <SignedOut>
-            <SignInButton />
-          </SignedOut>
-          <SignedIn>
-            <UserButton />
-          </SignedIn>
-          <Provider>{children}</Provider>
+          <Provider>
+            {children} <Toaster />
+          </Provider>
         </body>
       </html>
     </ClerkProvider>
