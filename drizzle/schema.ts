@@ -13,3 +13,10 @@ export const reservations = pgTable('reservations', {
   service: text('service'),
   dateTime: text('dateTime'),
 });
+
+export const reviews = pgTable('reviews', {
+  id: serial('id').primaryKey(),
+  customerName: text('customer_name').notNull(),
+  starRating: integer('star_rating').notNull(),
+  comment: text('comment').notNull(),
+});

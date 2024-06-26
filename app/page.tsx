@@ -28,6 +28,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import Header from '@/components/header';
+import { useQuery } from '@tanstack/react-query';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useRouter } from 'next/navigation';
 
 const HomePage = () => {
   return (
@@ -160,10 +163,21 @@ const FormSchema = z.object({
 });
 
 function Reviews() {
-  const [reviews, setReviews] = useState<any[]>(() => {
-    const reviews = localStorage.getItem('reviews');
-    return reviews ? JSON.parse(reviews) : [];
+  const {
+    data: reviews,
+    isFetching,
+    refetch,
+  } = useQuery({
+    queryKey: ['reviews'],
+    queryFn: async () => {
+      const response = await fetch('/api/reviews');
+      if (!response.ok) {
+        throw new Error('Failed to fetch reviews');
+      }
+      return response.json();
+    },
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -175,19 +189,31 @@ function Reviews() {
     },
   });
 
-  useEffect(() => {
-    localStorage.setItem('reviews', JSON.stringify(reviews));
-  }, [reviews]);
-
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    setReviews((prevReviews) => [
-      ...prevReviews,
-      { ...data, starRating: parseInt(data.starRating) },
-    ]);
-    toast({
-      title: 'Review submitted',
-      description: 'Thank you for your feedback!',
-    });
+  async function onSubmit(data: z.infer<typeof FormSchema>) {
+    setIsSubmitting(true);
+    try {
+      const response = await fetch('/api/reviews', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to submit reservation');
+      }
+      toast({
+        title: 'Review submitted',
+        description: 'Thank you for your feedback!',
+      });
+      form.reset();
+    } catch (error) {
+      console.error('Error submitting reservation:', error);
+      alert('Failed to submit reservation. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+    refetch();
     form.reset();
   }
 
@@ -263,7 +289,9 @@ function Reviews() {
               />
               <Button
                 type='submit'
-                className='bg-primary hover:bg-primary/90 text-secondary'
+                className={`bg-primary text-primary-foreground ${
+                  isSubmitting ? 'cursor-not-allowed bg-secondary' : ''
+                }`}
               >
                 Submit Review
               </Button>
@@ -273,26 +301,37 @@ function Reviews() {
       </Card>
 
       <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-        {reviews.map((review, index) => (
-          <Card key={index} className='bg-secondary'>
-            <CardHeader>
-              <CardTitle className='text-primary flex items-center justify-between'>
-                <span>{review.customerName}</span>
-                <span className='flex items-center'>
-                  {[...Array(review.starRating)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className='w-5 h-5 fill-primary text-primary'
-                    />
-                  ))}
-                </span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className='text-primary'>
-              <p>{review.comment}</p>
-            </CardContent>
-          </Card>
-        ))}
+        {isFetching ? (
+          <>
+            <div className='w-full p-4 justify-between'>
+              <Skeleton className='h-32 w-full bg-primary/30' />
+            </div>
+            <div className='w-full p-4 justify-between'>
+              <Skeleton className='h-32 w-full bg-primary/30' />
+            </div>
+          </>
+        ) : (
+          reviews?.map((review: any, index: number) => (
+            <Card key={index} className='bg-secondary'>
+              <CardHeader>
+                <CardTitle className='text-primary flex items-center justify-between'>
+                  <span>{review.customerName}</span>
+                  <span className='flex items-center'>
+                    {[...Array(review.starRating)].map((_, i) => (
+                      <Star
+                        key={i}
+                        className='w-5 h-5 fill-primary text-primary'
+                      />
+                    ))}
+                  </span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className='text-primary'>
+                <p>{review.comment}</p>
+              </CardContent>
+            </Card>
+          ))
+        )}
       </div>
     </section>
   );
