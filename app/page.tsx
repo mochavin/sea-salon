@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Scissors, Brush, Sparkles, Phone, Star } from 'lucide-react';
@@ -27,36 +27,11 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
+import Header from '@/components/header';
 
 const HomePage = () => {
   return (
     <div className='min-h-screen bg-secondary'>
-      <header className='bg-primary shadow-md'>
-        <div className='container mx-auto px-4 py-6 flex justify-between items-center'>
-          <h1 className='text-3xl font-bold text-secondary'>SEA Salon</h1>
-          <nav>
-            <ul className='flex space-x-4'>
-              <li>
-                <Link
-                  href='#services'
-                  className='text-secondary hover:text-white'
-                >
-                  Services
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href='#contact'
-                  className='text-secondary hover:text-white'
-                >
-                  Contact
-                </Link>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      </header>
-
       <section className='text-center mb-12 relative'>
         <div className='relative w-full h-64 rounded-lg shadow-lg mb-6 overflow-hidden'>
           <Image
@@ -155,7 +130,7 @@ const HomePage = () => {
 
         <div className='text-center'>
           <Button className='bg-primary hover:bg-primary/90 text-secondary'>
-            Book an Appointment
+            <Link href='/reservation'>Book an Appointment</Link>
           </Button>
         </div>
         <Reviews />
@@ -183,8 +158,12 @@ const FormSchema = z.object({
     message: 'Comment must be at least 10 characters.',
   }),
 });
-export function Reviews() {
-  const [reviews, setReviews] = useState<any[]>([]);
+
+function Reviews() {
+  const [reviews, setReviews] = useState<any[]>(() => {
+    const reviews = localStorage.getItem('reviews');
+    return reviews ? JSON.parse(reviews) : [];
+  });
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -195,6 +174,10 @@ export function Reviews() {
       comment: '',
     },
   });
+
+  useEffect(() => {
+    localStorage.setItem('reviews', JSON.stringify(reviews));
+  }, [reviews]);
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
     setReviews((prevReviews) => [
