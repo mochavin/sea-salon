@@ -13,6 +13,7 @@ import {
   FormControl,
   FormMessage,
 } from '@/components/ui/form';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 const formSchema = z.object({
@@ -28,23 +29,35 @@ export default function SignIn() {
       password: '',
     },
   });
+  const [isFailed, setIsFailed] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    setIsLoading(true);
     const result = await signIn('credentials', {
       email: values.email,
       password: values.password,
-      callbackUrl: '/',
+      redirect: false,
+      callbackUrl: '/dashboard',
     });
-
     if (result?.error) {
       console.error(result.error);
     }
+    if (!result?.ok) setIsFailed(true);
+    else {
+      router.push('/dashboard');
+    }
+    setIsLoading(false);
   };
 
   return (
     <div className='flex justify-center items-center min-h-screen bg-gray-100'>
       <div className='w-full max-w-md p-8 space-y-3 rounded-xl bg-white shadow-lg'>
         <h1 className='text-2xl font-bold text-center'>Sign In</h1>
+        {isFailed && (
+          <p className='text-red-500 text-center'>Invalid email or password</p>
+        )}
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
             <FormField
@@ -74,7 +87,7 @@ export default function SignIn() {
               )}
             />
             <Button type='submit' className='w-full'>
-              Sign In
+              {isLoading ? 'Loading...' : 'Sign In'}
             </Button>
           </form>
         </Form>
