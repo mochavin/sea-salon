@@ -1,5 +1,5 @@
 import { db } from './db';
-import { reservations, reviews } from './schema';
+import { reservations, reviews, users } from './schema';
 // import { InsertUser, usersTable } from './schema';
 
 export async function createUser(data: any) {
@@ -32,4 +32,15 @@ export async function postReviews(req: any) {
 
 export async function getReviews() {
   return await db.select().from(reviews);
+}
+
+export async function signUp(data: any) {
+  const body = data;
+  try {
+    await db.insert(users).values(body);
+    return { success: true };
+  } catch (error) {
+    console.error('Error creating user:', error);
+    throw new Error('Failed to create user');
+  }
 }

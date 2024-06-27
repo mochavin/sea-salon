@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/form';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -86,6 +87,12 @@ export default function SignIn() {
                 </FormItem>
               )}
             />
+            <Link
+              href='/auth/signup'
+              className='py-2 text-blue-500 hover:underline text-center'
+            >
+              Create an account
+            </Link>
             <Button type='submit' className='w-full'>
               {isLoading ? 'Loading...' : 'Sign In'}
             </Button>
