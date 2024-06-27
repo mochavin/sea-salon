@@ -1,6 +1,10 @@
+'use client';
 import Link from 'next/link';
+import { Button } from './ui/button';
+import { signOut, useSession } from 'next-auth/react';
 
 export default function Header() {
+  const { data: session } = useSession();
   return (
     <header className='bg-primary shadow-md'>
       <div className='container mx-auto px-4 py-6 flex justify-between items-center'>
@@ -22,6 +26,19 @@ export default function Header() {
                 Contact
               </Link>
             </li>
+            {session ? (
+              <li>
+                <Button onClick={() => signOut({ callbackUrl: '/' })}>
+                  Log Out
+                </Button>
+              </li>
+            ) : (
+              <li>
+                <Link href='/auth'>
+                  <p className='text-secondary hover:text-white'>Sign In</p>
+                </Link>
+              </li>
+            )}
           </ul>
         </nav>
       </div>
