@@ -30,6 +30,16 @@ export async function postReservations(req: any) {
   }
 }
 
+export async function getReservations(email: string) {
+  const userId = await db.query.users.findFirst({
+    where: eq(users.email, email),
+  });
+  return await db
+    .select()
+    .from(reservations)
+    .where(eq(reservations.userId, userId?.id!));
+}
+
 export async function postReviews(req: any) {
   try {
     const body = await req.json();

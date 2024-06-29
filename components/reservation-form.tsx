@@ -23,6 +23,7 @@ import {
 import { useToast } from './ui/use-toast';
 import { useQuery } from '@tanstack/react-query';
 import { Skeleton } from './ui/skeleton';
+import { useRouter } from 'next/navigation';
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -55,6 +56,7 @@ export default function ReservationForm() {
     },
     refetchOnWindowFocus: false,
   });
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -86,6 +88,7 @@ export default function ReservationForm() {
         description: 'We will contact you shortly to confirm.',
       });
       form.reset();
+      router.push('/dashboard');
     } catch (error) {
       console.error('Error submitting reservation:', error);
       alert('Failed to submit reservation. Please try again.');
