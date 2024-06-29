@@ -1,100 +1,100 @@
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import AddServiceForm from '@/components/add-service-form';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormMessage,
-} from '@/components/ui/form';
-
-const formSchema = z.object({
-  name: z.string().min(1),
-  duration: z.number().min(1),
-});
+import { Skeleton } from '@/components/ui/skeleton';
+import { useToast } from '@/components/ui/use-toast';
+import { SelectService } from '@/drizzle/schema';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 
 export default function AdminDashboard() {
-  const queryClient = useQueryClient();
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: '',
-      duration: 30,
-    },
-  });
-
-  const mutation = useMutation({
-    mutationKey: ['addService'],
-    mutationFn: async (values: z.infer<typeof formSchema>) => {
-      const response = await fetch('/api/services', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(values),
-      });
-
+  const { data: services, isFetching } = useQuery<SelectService[]>({
+    queryKey: ['services'],
+    queryFn: async () => {
+      const response = await fetch('/api/services');
       return response.json();
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['services'],
+    refetchOnWindowFocus: false,
+  });
+  return (
+    <div className='container'>
+      <h1 className='text-2xl font-bold'>Admin Dashboard</h1>
+      <h2 className='text-lg font-semibold'>Current Services</h2>
+      <ul className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4'>
+        {isFetching
+          ? Array(6)
+              .fill(1)
+              .map((_, index) => <ServiceCardSkeleton key={index} />)
+          : services?.map((service) => (
+              <ServiceCard key={service.id} service={service} />
+            ))}
+      </ul>
+      <AddServiceForm />
+    </div>
+  );
+}
+
+const ServiceCardSkeleton = () => (
+  <li className='bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden'>
+    <div className='p-4 flex justify-between items-center'>
+      <div className='overflow-hidden w-2/3'>
+        <Skeleton className='h-5 w-full mb-2' />
+        <Skeleton className='h-4 w-3/4' />
+      </div>
+      <Skeleton className='h-9 w-20' />
+    </div>
+  </li>
+);
+
+const ServiceCard = ({ service }: { service: SelectService }) => {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: number) => {
+      const response = await fetch(`/api/services/${id}`, {
+        method: 'DELETE',
       });
-      form.reset();
+      if (!response.ok) {
+        throw new Error('Failed to delete service');
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['services'] });
+      toast({
+        variant: 'default',
+        title: 'Service deleted',
+        description: 'The service has been removed from the list',
+      });
     },
     onError: (error) => {
+      toast({
+        title: 'Failed to delete service',
+        description: 'Please try again',
+      });
       console.error(error);
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    mutation.mutate(values);
+  const handleDelete = () => {
+    deleteMutation.mutate(service.id);
   };
 
   return (
-    <div className='p-8'>
-      <h1 className='text-2xl font-bold mb-4'>Admin Dashboard</h1>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
-          <FormField
-            control={form.control}
-            name='name'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Service Name</FormLabel>
-                <FormControl>
-                  <Input placeholder='Service Name' {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name='duration'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Duration (minutes)</FormLabel>
-                <FormControl>
-                  <Input
-                    type='number'
-                    placeholder='Duration'
-                    {...field}
-                    onChange={(e) => field.onChange(parseInt(e.target.value))}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button type='submit'>Add Service</Button>
-        </form>
-      </Form>
-    </div>
+    <li className='bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden'>
+      <div className='p-4 flex justify-between items-center'>
+        <div className='overflow-hidden'>
+          <p className='font-medium truncate'>{service.name}</p>
+          <p className='text-sm text-gray-500'>{service.duration} minutes</p>
+        </div>
+        <Button
+          size='sm'
+          variant='destructive'
+          onClick={handleDelete}
+          disabled={deleteMutation.isPending}
+        >
+          {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
+        </Button>
+      </div>
+    </li>
   );
-}
+};
