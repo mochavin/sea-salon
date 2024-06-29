@@ -15,11 +15,14 @@ export const UserMessages = pgTable('user_messages', {
 });
 
 export const reservations = pgTable('reservations', {
-  id: serial('id').primaryKey(),
+  id: serial('id').primaryKey().unique(),
   name: text('name'),
   phone: text('phone'),
-  service: text('service'),
+  serviceId: integer('service_id')
+    .references(() => services.id)
+    .notNull(),
   dateTime: text('dateTime'),
+  userId: integer('user_id').references(() => users.id),
 });
 
 export const reviews = pgTable('reviews', {
@@ -39,7 +42,7 @@ export const users = pgTable('users', {
 });
 
 export const services = pgTable('services', {
-  id: serial('id').primaryKey(),
+  id: serial('id').primaryKey().unique(),
   name: text('name').notNull(),
   duration: integer('duration').notNull(), // in minutes
 });

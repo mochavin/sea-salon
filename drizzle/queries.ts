@@ -1,5 +1,8 @@
+import { getSession } from 'next-auth/react';
 import { db } from './db';
-import { reservations, reviews, users } from './schema';
+import { reservations, reviews, services, users } from './schema';
+import { getServerSession } from 'next-auth';
+import { eq } from 'drizzle-orm';
 // import { InsertUser, usersTable } from './schema';
 
 export async function createUser(data: any) {
@@ -9,7 +12,16 @@ export async function createUser(data: any) {
 
 export async function postReservations(req: any) {
   try {
-    const body = await req.json();
+    let body = await req.json();
+    const session = await getServerSession();
+    const user = await db.query.users.findFirst({
+      where: eq(users.email, session?.user?.email!),
+    });
+    const serviceId = await db.query.services.findFirst({
+      where: eq(services.name, body.service),
+    });
+    console.log('Creating reservation', serviceId, user, body);
+    body = { ...body, serviceId: serviceId?.id, userId: user?.id };
     await db.insert(reservations).values(body);
     return { success: true };
   } catch (error) {
@@ -42,5 +54,20 @@ export async function signUp(data: any) {
   } catch (error) {
     console.error('Error creating user:', error);
     throw new Error('Failed to create user');
+  }
+}
+
+export async function getAllService() {
+  return await db.select().from(services);
+}
+
+export async function postServices(req: any) {
+  try {
+    const body = await req.json();
+    await db.insert(services).values(body);
+    return { success: true };
+  } catch (error) {
+    console.error('Error creating service:', error);
+    throw new Error('Failed to create service');
   }
 }

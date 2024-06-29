@@ -21,6 +21,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useToast } from './ui/use-toast';
+import { useQuery } from '@tanstack/react-query';
+import { Skeleton } from './ui/skeleton';
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -29,11 +31,7 @@ const formSchema = z.object({
   phone: z.string().regex(/^\d{10,}$/, {
     message: 'Phone number must be at least 10 digits.',
   }),
-  service: z.enum([
-    'Haircuts and styling',
-    'Manicure and pedicure',
-    'Facial treatments',
-  ]),
+  service: z.string(),
   dateTime: z.string().refine(
     (val) => {
       const date = new Date(val);
@@ -49,18 +47,27 @@ const formSchema = z.object({
 export default function ReservationForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const { data: services, isFetching } = useQuery({
+    queryKey: ['services'],
+    queryFn: async () => {
+      const response = await fetch('/api/services');
+      return response.json();
+    },
+    refetchOnWindowFocus: false,
+  });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: '',
       phone: '',
-      service: 'Haircuts and styling',
+      service: '',
       dateTime: '',
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log('Submitting reservation:', values);
     setIsSubmitting(true);
     try {
       const response = await fetch('/api/reservations', {
@@ -86,6 +93,8 @@ export default function ReservationForm() {
       setIsSubmitting(false);
     }
   }
+
+  console.log(services);
 
   return (
     <Form {...form}>
@@ -122,22 +131,18 @@ export default function ReservationForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Service Type</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select onValueChange={field.onChange}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder='Select a service' />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value='Haircuts and styling'>
-                    Haircuts and styling
-                  </SelectItem>
-                  <SelectItem value='Manicure and pedicure'>
-                    Manicure and pedicure
-                  </SelectItem>
-                  <SelectItem value='Facial treatments'>
-                    Facial treatments
-                  </SelectItem>
+                  {services?.map((service: any) => (
+                    <SelectItem key={service.id} value={service.name}>
+                      {service.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <FormMessage />

@@ -133,7 +133,7 @@ const HomePage = () => {
 
         <div className='text-center'>
           <Button className='bg-primary hover:bg-primary/90 text-secondary'>
-            <Link href='/reservation'>Book an Appointment</Link>
+            <Link href='/dashboard/reservation'>Book an Appointment</Link>
           </Button>
         </div>
         <Reviews />
