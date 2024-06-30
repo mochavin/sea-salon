@@ -1,8 +1,15 @@
 import { getSession } from 'next-auth/react';
 import { db } from './db';
-import { reservations, reviews, services, users } from './schema';
+import {
+  branches,
+  branchesServices,
+  reservations,
+  reviews,
+  services,
+  users,
+} from './schema';
 import { getServerSession } from 'next-auth';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 // import { InsertUser, usersTable } from './schema';
 
 export async function createUser(data: any) {
@@ -79,5 +86,34 @@ export async function postServices(req: any) {
   } catch (error) {
     console.error('Error creating service:', error);
     throw new Error('Failed to create service');
+  }
+}
+
+export async function getBranches() {
+  return await db.select().from(branches);
+}
+
+export async function getBranchCount(req: any) {
+  try {
+    const res = await db
+      .select()
+      .from(branchesServices)
+      .where(eq(branchesServices.branchId, req));
+    return res.length;
+  } catch (error) {
+    console.error('Error getting branch count:', error);
+    throw new Error('Failed to get branch count');
+  }
+}
+
+export async function postBranches(req: any) {
+  try {
+    const body = await req.json();
+    console.log('Creating branch', body);
+    await db.insert(branches).values(body);
+    return { success: true };
+  } catch (error) {
+    console.error('Error creating branch:', error);
+    throw new Error('Failed to create branch');
   }
 }
