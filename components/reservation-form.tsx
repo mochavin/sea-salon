@@ -69,7 +69,6 @@ export default function ReservationForm() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log('Submitting reservation:', values);
     setIsSubmitting(true);
     try {
       const response = await fetch('/api/reservations', {
@@ -96,8 +95,6 @@ export default function ReservationForm() {
       setIsSubmitting(false);
     }
   }
-
-  console.log(services);
 
   return (
     <Form {...form}>

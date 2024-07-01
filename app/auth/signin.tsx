@@ -16,6 +16,7 @@ import {
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useToast } from '@/components/ui/use-toast';
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -33,6 +34,7 @@ export default function SignIn() {
   const [isFailed, setIsFailed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const { toast } = useToast();
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
@@ -47,6 +49,10 @@ export default function SignIn() {
     }
     if (!result?.ok) setIsFailed(true);
     else {
+      toast({
+        title: 'Signed in',
+        description: 'Welcome back!',
+      });
       router.push('/dashboard');
     }
     setIsLoading(false);

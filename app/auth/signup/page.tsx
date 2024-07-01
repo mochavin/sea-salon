@@ -15,6 +15,8 @@ import {
 } from '@/components/ui/form';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useToast } from '@/components/ui/use-toast';
+import { signIn } from 'next-auth/react';
 
 const signUpSchema = z.object({
   fullName: z.string().min(2, 'Name is too short'),
@@ -36,6 +38,7 @@ export default function SignUp() {
   const [isFailed, setIsFailed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const { toast } = useToast();
 
   const onSubmit = async (values: z.infer<typeof signUpSchema>) => {
     setIsLoading(true);
@@ -51,8 +54,16 @@ export default function SignUp() {
         setIsFailed(true);
         return;
       }
-      router.push('/dashboard');
-      form.reset();
+      toast({
+        title: 'Account created',
+        description: 'Thank you for signing up!',
+      });
+      await signIn('credentials', {
+        email: values.email,
+        password: values.password,
+        redirect: true,
+        callbackUrl: '/dashboard',
+      });
     } catch (error) {
       console.error('Error signing up:', error);
       setIsFailed(true);

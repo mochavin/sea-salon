@@ -57,13 +57,13 @@ const HomePage = () => {
           </div>
         </div>
       </section>
-      <main className='container mx-auto px-4 py-8'>
+      <main className='container mx-auto px-8 py-8 '>
         <section id='services' className='mb-12'>
           <h3 className='text-2xl font-semibold text-primary mb-6'>
             Our Services
           </h3>
           <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
-            <Card className='bg-secondary '>
+            <Card className='bg-primary-foreground '>
               <CardHeader>
                 <CardTitle className='flex items-center text-primary'>
                   <Scissors className='mr-2' />
@@ -74,7 +74,7 @@ const HomePage = () => {
                 <p>Professional cuts and styles for all hair types.</p>
               </CardContent>
             </Card>
-            <Card className='bg-secondary '>
+            <Card className='bg-primary-foreground '>
               <CardHeader>
                 <CardTitle className='flex items-center text-primary'>
                   <Brush className='mr-2' />
@@ -85,7 +85,7 @@ const HomePage = () => {
                 <p>Pamper your hands and feet with our nail care services.</p>
               </CardContent>
             </Card>
-            <Card className='bg-secondary '>
+            <Card className='bg-primary-foreground '>
               <CardHeader>
                 <CardTitle className='flex items-center text-primary'>
                   <Sparkles className='mr-2' />
@@ -106,7 +106,7 @@ const HomePage = () => {
             Contact Us
           </h3>
           <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-            <Card className='bg-secondary'>
+            <Card className='bg-primary-foreground'>
               <CardHeader>
                 <CardTitle className='text-primary'>Thomas</CardTitle>
               </CardHeader>
@@ -117,7 +117,7 @@ const HomePage = () => {
                 </p>
               </CardContent>
             </Card>
-            <Card className='bg-secondary'>
+            <Card className='bg-primary-foreground'>
               <CardHeader>
                 <CardTitle className='text-primary'>Sekar</CardTitle>
               </CardHeader>

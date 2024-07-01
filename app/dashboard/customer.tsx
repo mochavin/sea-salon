@@ -5,10 +5,10 @@ import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import Link from 'next/link';
 
 export default function CustomerDashboard() {
   const { data: session } = useSession();
-  console.log('session', session);
   const { data: reservations, isFetching } = useQuery<SelectReservation[]>({
     queryKey: ['reservations'],
     queryFn: async () => {
@@ -46,17 +46,18 @@ export default function CustomerDashboard() {
               </Card>
             </div>
           </>
+        ) : reservations?.length === 0 ? (
+          <div className='flex justify-center items-center'>
+            <p className='text-gray-500 text-center'>No reservations found</p>
+          </div>
         ) : (
           reservations?.map((reservation) => (
             <ReservationCard key={reservation.id} reservation={reservation} />
           ))
         )}
       </div>
-      <Button
-        className='mt-4 w-full sm:w-auto'
-        onClick={() => router.push('/dashboard/reservation')}
-      >
-        Make Reservation
+      <Button className='mt-4 w-full sm:w-auto'>
+        <Link href='/dashboard/reservation'>Make Reservation</Link>
       </Button>
     </div>
   );

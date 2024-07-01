@@ -7,6 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/components/ui/use-toast';
 import { SelectBranch, SelectService } from '@/drizzle/schema';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 export default function AdminDashboard() {
@@ -158,12 +159,8 @@ const BranchCard = ({ branch }: { branch: SelectBranch }) => {
           >
             {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
           </Button>
-          <Button
-            size='sm'
-            variant='outline'
-            onClick={() => router.push(`/dashboard/branches?id=${branch.id}`)}
-          >
-            Manage
+          <Button size='sm' variant='outline'>
+            <Link href={`/dashboard/branches?id=${branch.id}`}>Manage</Link>
           </Button>
         </div>
       </div>

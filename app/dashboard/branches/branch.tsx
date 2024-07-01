@@ -25,6 +25,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import NoAccess from '@/components/no-access';
+import { ArrowLeftCircleIcon } from 'lucide-react';
+import Link from 'next/link';
 
 export default function BranchPage() {
   const { data: session } = useSession({
@@ -56,6 +58,9 @@ export default function BranchPage() {
   if (session?.user?.role === 'Admin')
     return (
       <div className='container flex flex-col gap-4 py-8'>
+        <Link href='/dashboard'>
+          <ArrowLeftCircleIcon className='text-primary mb-4 mr-2' />
+        </Link>
         <h1 className='text-2xl font-bold'>Branch Dashboard</h1>
         <AddServiceForm />
         <h2 className='text-lg font-semibold'>
