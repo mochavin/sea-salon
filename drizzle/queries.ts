@@ -93,6 +93,16 @@ export async function getBranches() {
   return await db.select().from(branches);
 }
 
+export async function getBranchById(req: any) {
+  try {
+    const res = await db.select().from(branches).where(eq(branches.id, req));
+    return res[0];
+  } catch (error) {
+    console.error('Error getting branch by id:', error);
+    throw new Error('Failed to get branch by id');
+  }
+}
+
 export async function getBranchCount(req: any) {
   try {
     const res = await db
@@ -106,14 +116,80 @@ export async function getBranchCount(req: any) {
   }
 }
 
+export async function getServiceByBranch(req: any) {
+  try {
+    const res = await db
+      .select()
+      .from(services)
+      .innerJoin(
+        branchesServices,
+        and(
+          eq(services.id, branchesServices.serviceId),
+          eq(branchesServices.branchId, req)
+        )
+      );
+
+    const servicesOnly = res.map((item) => item.services);
+    return servicesOnly;
+  } catch (error) {
+    console.error('Error getting service by branch:', error);
+    throw new Error('Failed to get service by branch');
+  }
+}
+
 export async function postBranches(req: any) {
   try {
     const body = await req.json();
-    console.log('Creating branch', body);
     await db.insert(branches).values(body);
     return { success: true };
   } catch (error) {
     console.error('Error creating branch:', error);
     throw new Error('Failed to create branch');
+  }
+}
+
+export async function postBranchServices(req: any) {
+  try {
+    console.log('Creating branch service', req);
+    const isExist = await db
+      .select()
+      .from(branchesServices)
+      .where(
+        and(
+          eq(branchesServices.branchId, req.branchId),
+          eq(branchesServices.serviceId, req.serviceId)
+        )
+      );
+    if (isExist.length > 0) {
+      throw new Error('Branch service already exists');
+    }
+    await db.insert(branchesServices).values(req);
+    return { success: true };
+  } catch (error) {
+    console.error('Error creating branch service:', error);
+    throw new Error('Failed to create branch service');
+  }
+}
+
+export async function deleteBranchService({
+  serviceId,
+  branchId,
+}: {
+  serviceId: string;
+  branchId: string;
+}) {
+  try {
+    const res = await db
+      .delete(branchesServices)
+      .where(
+        and(
+          eq(branchesServices.branchId, parseInt(branchId)),
+          eq(branchesServices.serviceId, parseInt(serviceId))
+        )
+      );
+    return { success: true };
+  } catch (error) {
+    console.error('Error deleting branch service:', error);
+    throw new Error('Failed to delete branch service');
   }
 }

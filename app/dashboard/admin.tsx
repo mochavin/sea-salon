@@ -1,6 +1,7 @@
 import AddBranchForm from '@/components/add-branch.form';
 import AddServiceForm from '@/components/add-service-form';
 import { ServiceCard } from '@/components/service-card';
+import { ServiceCardSkeleton } from '@/components/service-card-skeleton';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/components/ui/use-toast';
@@ -67,18 +68,6 @@ export default function AdminDashboard() {
     </div>
   );
 }
-
-const ServiceCardSkeleton = () => (
-  <li className='bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden'>
-    <div className='p-4 flex justify-between items-center'>
-      <div className='overflow-hidden w-2/3'>
-        <Skeleton className='h-5 w-full mb-2' />
-        <Skeleton className='h-4 w-3/4' />
-      </div>
-      <Skeleton className='h-9 w-20' />
-    </div>
-  </li>
-);
 
 const BranchCardSkeleton = () => (
   <li className='bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden'>
