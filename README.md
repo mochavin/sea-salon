@@ -2,6 +2,9 @@
 
 This repository contains the SEA Salon Application, a comprehensive web application for managing salon services, bookings, and customer reviews. The application is built using modern web technologies and follows a robust architecture to ensure scalability and maintainability.
 
+Click the image below to watch the demo video on YouTube:
+[![demo video](https://img.youtube.com/vi/fuCwaOWZtqI/maxresdefault.jpg)](https://youtu.be/fuCwaOWZtqI)
+
 ## Technologies Used
 
 - [Next.js](https://nextjs.org/) - React framework for building user interfaces
