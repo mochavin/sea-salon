@@ -19,17 +19,29 @@ export default function CustomerDashboard() {
     },
     refetchOnWindowFocus: false,
   });
-  const router = useRouter();
+
+  const currentDate = new Date();
+
+  const pastReservations = reservations?.filter((reservation) => {
+    const reservationDate = new Date(reservation.dateTime!);
+    return reservationDate < currentDate;
+  });
+
+  const upcomingReservations = reservations?.filter((reservation) => {
+    const reservationDate = new Date(reservation.dateTime!);
+    return reservationDate > currentDate;
+  });
+  console.log(reservations);
   return (
     <div className='p-8'>
       <h1 className='text-2xl font-bold mb-4'>
         Welcome, {session?.user?.name}
       </h1>
-      <h2 className='text-xl font-semibold mb-4'>Your Reservations</h2>
-      <div className='flex flex-wrap -mx-2'>
-        {isFetching ? (
-          <>
-            <div className='w-full sm:w-1/2 lg:w-1/3 px-2 mb-4'>
+
+      {isFetching ? (
+        <div className='flex flex-wrap -mx-2'>
+          {[...Array(2)].map((_, index) => (
+            <div key={index} className='w-full sm:w-1/2 lg:w-1/3 px-2 mb-4'>
               <Card>
                 <CardContent className='animate-pulse'>
                   <Skeleton className='h-16 bg-gray-200 rounded mb-2 mt-2'></Skeleton>
@@ -37,25 +49,15 @@ export default function CustomerDashboard() {
                 </CardContent>
               </Card>
             </div>
-            <div className='w-full sm:w-1/2 lg:w-1/3 px-2 mb-4'>
-              <Card>
-                <CardContent className='animate-pulse'>
-                  <Skeleton className='h-16 bg-gray-200 rounded mb-2 mt-2'></Skeleton>
-                  <Skeleton className='h-6 bg-gray-200 rounded'></Skeleton>
-                </CardContent>
-              </Card>
-            </div>
-          </>
-        ) : reservations?.length === 0 ? (
-          <div className='flex justify-center items-center'>
-            <p className='text-gray-500 text-center'>No reservations found</p>
-          </div>
-        ) : (
-          reservations?.map((reservation) => (
-            <ReservationCard key={reservation.id} reservation={reservation} />
-          ))
-        )}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <>
+          {renderReservations(upcomingReservations!, 'Upcoming Reservations')}
+          {renderReservations(pastReservations!, 'Past Reservations')}
+        </>
+      )}
+
       <Button className='mt-4 w-full sm:w-auto'>
         <Link href='/dashboard/reservation'>Make Reservation</Link>
       </Button>
@@ -96,3 +98,25 @@ const ReservationCard = ({
     </div>
   );
 };
+
+const renderReservations = (
+  reservationList: SelectReservation[],
+  title: string
+) => (
+  <>
+    <h2 className='text-xl font-semibold mb-4'>{title}</h2>
+    <div className='flex flex-wrap -mx-2 mb-8'>
+      {reservationList.length === 0 ? (
+        <div className='w-full px-2'>
+          <p className='text-gray-500 text-center'>
+            No {title.toLowerCase()} found
+          </p>
+        </div>
+      ) : (
+        reservationList.map((reservation) => (
+          <ReservationCard reservation={reservation} key={reservation.id} />
+        ))
+      )}
+    </div>
+  </>
+);
