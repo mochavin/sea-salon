@@ -38,7 +38,7 @@ export const ServiceCard = ({ service }: { service: SelectService }) => {
   };
 
   return (
-    <li className='bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden'>
+    <div className='bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden'>
       <div className='p-4 flex justify-between items-center'>
         <div className='overflow-hidden'>
           <p className='font-medium truncate'>{service.name}</p>
@@ -53,6 +53,6 @@ export const ServiceCard = ({ service }: { service: SelectService }) => {
           {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
         </Button>
       </div>
-    </li>
+    </div>
   );
 };

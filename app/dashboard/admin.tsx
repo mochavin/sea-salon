@@ -3,14 +3,19 @@ import AddServiceForm from '@/components/add-service-form';
 import { ServiceCard } from '@/components/service-card';
 import { ServiceCardSkeleton } from '@/components/service-card-skeleton';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/components/ui/use-toast';
 import { SelectBranch, SelectService } from '@/drizzle/schema';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export default function AdminDashboard() {
+  const [activeTab, setActiveTab] = useState('services');
+
   const { data: services, isFetching: isFetchingServices } = useQuery<
     SelectService[]
   >({
@@ -34,44 +39,61 @@ export default function AdminDashboard() {
   });
 
   return (
-    <div className='container flex flex-col gap-4'>
-      <h1 className='text-2xl font-bold'>Admin Dashboard</h1>
-      <AddServiceForm />
-      <h2 className='text-lg font-semibold'>Current Services</h2>
-      <ul className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4'>
-        {isFetchingServices ? (
-          Array(6)
-            .fill(1)
-            .map((_, index) => <ServiceCardSkeleton key={index} />)
-        ) : services?.length! > 0 ? (
-          services?.map((service) => (
-            <ServiceCard key={service.id} service={service} />
-          ))
-        ) : (
-          <p className='text-opacity-50'>No services found</p>
-        )}
-      </ul>
-      <AddBranchForm />
-      <h2 className='text-lg font-semibold'>Current Branches</h2>
-      <ul className='grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 gap-4 mb-4'>
-        {isFetchingBranches ? (
-          Array(6)
-            .fill(1)
-            .map((_, index) => <BranchCardSkeleton key={index} />)
-        ) : branches?.length! > 0 ? (
-          branches?.map((branch) => (
-            <BranchCard key={branch.id} branch={branch} />
-          ))
-        ) : (
-          <p className='text-opacity-50'>No branches found</p>
-        )}
-      </ul>
+    <div className='container mx-auto p-4'>
+      <h1 className='text-2xl font-bold mb-6'>Admin Dashboard</h1>
+
+      <Tabs value={activeTab} onValueChange={setActiveTab} className='w-full'>
+        <TabsList className='grid w-full grid-cols-2'>
+          <TabsTrigger value='services'>Manage Services</TabsTrigger>
+          <TabsTrigger value='branches'>Manage Branches</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value='services' className='mt-6'>
+          <div>
+            <AddServiceForm />
+            <h2 className='text-lg font-semibold'>Current Services</h2>
+            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
+              {isFetchingServices ? (
+                Array(6)
+                  .fill(1)
+                  .map((_, index) => <ServiceCardSkeleton key={index} />)
+              ) : services?.length! > 0 ? (
+                services?.map((service) => (
+                  <ServiceCard key={service.id} service={service} />
+                ))
+              ) : (
+                <p className='text-gray-500 col-span-full'>No services found</p>
+              )}
+            </div>
+          </div>
+        </TabsContent>
+
+        <TabsContent value='branches' className='mt-6'>
+          <div>
+            <AddBranchForm />
+            <h2 className='text-lg font-semibold'>Current Branches</h2>
+            <div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>
+              {isFetchingBranches ? (
+                Array(4)
+                  .fill(1)
+                  .map((_, index) => <BranchCardSkeleton key={index} />)
+              ) : branches?.length! > 0 ? (
+                branches?.map((branch) => (
+                  <BranchCard key={branch.id} branch={branch} />
+                ))
+              ) : (
+                <p className='text-gray-500 col-span-full'>No branches found</p>
+              )}
+            </div>
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
 
 const BranchCardSkeleton = () => (
-  <li className='bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden'>
+  <div className='bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden'>
     <div className='p-4 flex justify-between items-center'>
       <div className='overflow-hidden w-2/3'>
         <Skeleton className='h-5 w-full mb-2' />
@@ -79,7 +101,7 @@ const BranchCardSkeleton = () => (
       </div>
       <Skeleton className='h-9 w-20' />
     </div>
-  </li>
+  </div>
 );
 
 const BranchCard = ({ branch }: { branch: SelectBranch }) => {
@@ -135,7 +157,7 @@ const BranchCard = ({ branch }: { branch: SelectBranch }) => {
   };
 
   return (
-    <li className='bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden'>
+    <div className='bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden'>
       <div className='p-4 flex justify-between items-center'>
         <div className='overflow-hidden flex flex-col w-full px-4'>
           <div className='flex items-center justify-between'>
@@ -164,6 +186,6 @@ const BranchCard = ({ branch }: { branch: SelectBranch }) => {
           </Button>
         </div>
       </div>
-    </li>
+    </div>
   );
 };
