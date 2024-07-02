@@ -1,5 +1,6 @@
 import {
   getAllService,
+  getBranchIdByName,
   getServiceByBranch,
   postServices,
 } from '@/drizzle/queries';
@@ -22,6 +23,20 @@ export async function POST(req: Request) {
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
   const userIdQuery = searchParams.get('branchId');
+  const branchNameQuery = searchParams.get('branchName');
+  if (branchNameQuery) {
+    const branchId = await getBranchIdByName(branchNameQuery);
+    try {
+      const res = await getServiceByBranch(branchId);
+      return NextResponse.json(res);
+    } catch (error) {
+      console.error('Error fetching service by branch:', error);
+      return NextResponse.json(
+        { error: 'Failed to fetch service by branch' },
+        { status: 500 }
+      );
+    }
+  }
   if (userIdQuery) {
     const branchId = parseInt(userIdQuery, 10);
     try {

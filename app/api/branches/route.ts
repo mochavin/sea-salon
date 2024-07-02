@@ -1,4 +1,9 @@
-import { getBranchById, getBranches, postBranches } from '@/drizzle/queries';
+import {
+  getBranchById,
+  getBranchIdByName,
+  getBranches,
+  postBranches,
+} from '@/drizzle/queries';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
@@ -18,10 +23,15 @@ export async function POST(req: Request) {
 export async function GET(req: NextRequest) {
   try {
     const params = req.nextUrl.searchParams;
-    const branchId = params.get('branchId');
+    const branchIdParam = params.get('branchId');
+    const branchNameParam = params.get('branchName');
+    const branchId = branchIdParam
+      ? parseInt(branchIdParam, 10)
+      : branchNameParam
+      ? await getBranchIdByName(branchNameParam)
+      : undefined;
     if (branchId) {
       const res = await getBranchById(branchId);
-      console.log(res);
       return NextResponse.json(res);
     }
     const res = await getBranches();

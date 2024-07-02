@@ -22,45 +22,28 @@ import {
 } from '@/components/ui/select';
 import { useToast } from './ui/use-toast';
 import { useQuery } from '@tanstack/react-query';
-import { Skeleton } from './ui/skeleton';
 import { useRouter } from 'next/navigation';
+import { SelectBranch } from '@/drizzle/schema';
+import { extractHourMinute } from '@/lib/utils';
 
 const formSchema = z.object({
-  name: z.string().min(2, {
-    message: 'Name must be at least 2 characters.',
-  }),
+  branch: z.string().min(1, { message: 'Branch is required' }),
+  name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
   phone: z.string().regex(/^\d{10,}$/, {
     message: 'Phone number must be at least 10 digits.',
   }),
-  service: z.string(),
-  dateTime: z.string().refine(
-    (val) => {
-      const date = new Date(val);
-      const hours = date.getHours();
-      return hours >= 9 && hours < 21;
-    },
-    {
-      message: 'Reservation must be between 9:00 AM and 9:00 PM',
-    }
-  ),
+  service: z.string().min(1, { message: 'Service is required' }),
+  dateTime: z.string().min(1, { message: 'Date and time is required' }),
 });
 
 export default function ReservationForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
-  const { data: services, isFetching } = useQuery({
-    queryKey: ['services'],
-    queryFn: async () => {
-      const response = await fetch('/api/services');
-      return response.json();
-    },
-    refetchOnWindowFocus: false,
-  });
   const router = useRouter();
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      branch: '',
       name: '',
       phone: '',
       service: '',
@@ -68,8 +51,66 @@ export default function ReservationForm() {
     },
   });
 
+  const branchName = form.watch('branch');
+
+  const { data: branches } = useQuery({
+    queryKey: ['branches'],
+    queryFn: async () => {
+      const response = await fetch('/api/branches');
+      return response.json();
+    },
+    refetchOnWindowFocus: false,
+  });
+
+  const { data: services } = useQuery({
+    queryKey: ['services', branchName],
+    queryFn: async () => {
+      const response = await fetch('/api/services?branchName=' + branchName);
+      return response.json();
+    },
+    refetchOnWindowFocus: false,
+  });
+
+  const { data: branchData } = useQuery<SelectBranch>({
+    queryKey: ['branchesData', branchName],
+    queryFn: async () => {
+      const response = await fetch('/api/branches?branchName=' + branchName);
+      return response.json();
+    },
+    refetchOnWindowFocus: false,
+  });
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
+    const openingTime = extractHourMinute(branchData?.openingTime!);
+    const closingTime = extractHourMinute(branchData?.closingTime!);
+    const dateTime = new Date(values.dateTime);
+    if (dateTime < new Date()) {
+      setIsSubmitting(false);
+      return form.setError('dateTime', {
+        type: 'manual',
+        message: 'Date and time must be in the future',
+      });
+    }
+
+    const hourInput = dateTime.getHours();
+    const minuteInput = dateTime.getMinutes();
+
+    if (
+      hourInput < parseInt(openingTime?.hour!) ||
+      hourInput > parseInt(closingTime?.hour!) ||
+      (hourInput === parseInt(openingTime?.hour!) &&
+        minuteInput < parseInt(openingTime?.minute!)) ||
+      (hourInput === parseInt(closingTime?.hour!) &&
+        minuteInput > parseInt(closingTime?.minute!))
+    ) {
+      setIsSubmitting(false);
+      return form.setError('dateTime', {
+        type: 'manual',
+        message: `Time must be between ${openingTime?.hour}:${openingTime?.minute} and ${closingTime?.hour}:${closingTime?.minute}`,
+      });
+    }
+
     try {
       const response = await fetch('/api/reservations', {
         method: 'POST',
@@ -99,6 +140,30 @@ export default function ReservationForm() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
+        <FormField
+          control={form.control}
+          name='branch'
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Branch</FormLabel>
+              <Select onValueChange={field.onChange}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder='Select a branch' />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {branches?.map((branch: SelectBranch) => (
+                    <SelectItem key={branch.id} value={branch.name}>
+                      {branch.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name='name'

@@ -129,12 +129,17 @@ export async function getServiceByBranch(req: any) {
         )
       );
 
-    const servicesOnly = res.map((item) => item.services);
+    const servicesOnly = res.map((item: any) => item.services);
     return servicesOnly;
   } catch (error) {
     console.error('Error getting service by branch:', error);
     throw new Error('Failed to get service by branch');
   }
+}
+
+export async function getBranchIdByName(name: string) {
+  const res = await db.select().from(branches).where(eq(branches.name, name));
+  return res[0].id;
 }
 
 export async function postBranches(req: any) {
