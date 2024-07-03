@@ -1,8 +1,8 @@
 // app/api/reservations/route.ts
 import { getReservations, postReservations } from '@/drizzle/queries';
 import { NextRequest, NextResponse } from 'next/server';
-import { authOption } from '../auth/[...nextauth]/route';
 import { getServerSession } from 'next-auth';
+import { authOption } from '@/lib/authOptions';
 
 export async function POST(req: Request) {
   try {
