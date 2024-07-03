@@ -1,6 +1,8 @@
 // app/api/reservations/route.ts
 import { getReservations, postReservations } from '@/drizzle/queries';
 import { NextRequest, NextResponse } from 'next/server';
+import { authOption } from '../auth/[...nextauth]/route';
+import { getServerSession } from 'next-auth';
 
 export async function POST(req: Request) {
   try {
@@ -16,11 +18,11 @@ export async function POST(req: Request) {
   }
 }
 
-export async function GET(req: NextRequest) {
-  const searchParams = req.nextUrl.searchParams;
-  const query = searchParams.get('email');
+export async function GET() {
+  const session = await getServerSession(authOption);
+  const userId = parseInt(session?.user?.id!);
   try {
-    const res = await getReservations(query!);
+    const res = await getReservations(userId);
     return NextResponse.json(res);
   } catch (error) {
     console.error('Error fetching reservations:', error);

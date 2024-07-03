@@ -45,14 +45,13 @@ export async function postReservations(req: any) {
   }
 }
 
-export async function getReservations(email: string) {
-  const userId = await db.query.users.findFirst({
-    where: eq(users.email, email),
-  });
+export async function getReservations(userId: number) {
   return await db
     .select()
     .from(reservations)
-    .where(eq(reservations.userId, userId?.id!));
+    .innerJoin(branches, eq(reservations.branchId, branches.id))
+    .innerJoin(services, eq(reservations.serviceId, services.id))
+    .where(eq(reservations.userId, userId));
 }
 
 export async function postReviews(req: any) {

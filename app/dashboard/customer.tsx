@@ -1,34 +1,42 @@
 import { useSession } from 'next-auth/react';
 import { useQuery } from '@tanstack/react-query';
-import { SelectBranch, SelectReservation } from '@/drizzle/schema';
+import {
+  SelectBranch,
+  SelectReservation,
+  SelectService,
+} from '@/drizzle/schema';
 import { Button } from '@/components/ui/button';
-import { useRouter } from 'next/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import Link from 'next/link';
 import { fetchData } from '@/lib/utils';
 
+interface ReservationData {
+  reservations: SelectReservation;
+  branches: SelectBranch;
+  services: SelectService;
+}
+
 export default function CustomerDashboard() {
   const { data: session } = useSession();
-  const { data: reservations, isFetching } = useQuery<SelectReservation[]>({
+  const { data: reservations, isFetching } = useQuery<ReservationData[]>({
     queryKey: ['reservations'],
-    queryFn: () =>
-      fetchData(`/api/reservations/?email=${session?.user?.email}`),
+    queryFn: () => fetchData(`/api/reservations/`),
     refetchOnWindowFocus: false,
   });
 
   const currentDate = new Date();
 
   const pastReservations = reservations?.filter((reservation) => {
-    const reservationDate = new Date(reservation.dateTime!);
+    const reservationDate = new Date(reservation.reservations.dateTime!);
     return reservationDate < currentDate;
   });
 
   const upcomingReservations = reservations?.filter((reservation) => {
-    const reservationDate = new Date(reservation.dateTime!);
+    const reservationDate = new Date(reservation.reservations.dateTime!);
     return reservationDate > currentDate;
   });
-  console.log(reservations);
+
   return (
     <div className='p-8'>
       <h1 className='text-2xl font-bold mb-4'>
@@ -62,31 +70,7 @@ export default function CustomerDashboard() {
   );
 }
 
-const ReservationCard = ({
-  reservation,
-}: {
-  reservation: SelectReservation;
-}) => {
-  const { data: branches } = useQuery<SelectBranch>({
-    queryKey: ['branches', reservation.branchId],
-    queryFn: () => fetchData(`/api/branches?branchId=${reservation.branchId}`),
-    refetchOnWindowFocus: false,
-  });
-
-  const { data: services } = useQuery<SelectBranch>({
-    queryKey: ['services', reservation.branchId],
-    queryFn: () => fetchData(`/api/services/${reservation.serviceId}`),
-    refetchOnWindowFocus: false,
-  });
-
-  const formatDate = (dateTime: string) => {
-    const date = new Date(dateTime);
-    return {
-      date: date.toLocaleDateString(),
-      time: date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    };
-  };
-
+const ReservationCard = ({ reservation }: { reservation: ReservationData }) => {
   return (
     <div className='w-full sm:w-1/2 lg:w-1/3 p-2'>
       <Card>
@@ -94,19 +78,31 @@ const ReservationCard = ({
           <div className='p-4 pb-0 gap-2'>
             <div className='flex items-center justify-between'>
               <h5 className='font-bold mb-2'>
-                {formatDate(reservation.dateTime!).date}
+                {new Date(
+                  reservation.reservations.dateTime!
+                ).toLocaleDateString('id-ID', {
+                  weekday: 'short',
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric',
+                })}
               </h5>
               <p className='text-sm mb-2'>
-                {formatDate(reservation.dateTime!).time}
+                {new Date(
+                  reservation.reservations.dateTime!
+                ).toLocaleTimeString([], {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
               </p>
             </div>
             <div className='flex flex-col mb-2 text-sm opacity-80'>
-              <p className=''>Branch: {branches?.name}</p>
-              <p className=''>Service: {services?.name}</p>
+              <p className=''>Branch: {reservation.branches?.name}</p>
+              <p className=''>Service: {reservation.services?.name}</p>
             </div>
             <div className='flex flex-col'>
-              <p className=''>Atas Nama: {reservation.name}</p>
-              <p className=''>Phone: {reservation.phone}</p>
+              <p className=''>Atas Nama: {reservation.reservations.name}</p>
+              <p className=''>Phone: {reservation.reservations.phone}</p>
             </div>
           </div>
         </CardContent>
@@ -116,7 +112,7 @@ const ReservationCard = ({
 };
 
 const renderReservations = (
-  reservationList: SelectReservation[],
+  reservationList: ReservationData[],
   title: string
 ) => (
   <>
@@ -130,7 +126,10 @@ const renderReservations = (
         </div>
       ) : (
         reservationList.map((reservation) => (
-          <ReservationCard reservation={reservation} key={reservation.id} />
+          <ReservationCard
+            reservation={reservation}
+            key={reservation.reservations.id}
+          />
         ))
       )}
     </div>

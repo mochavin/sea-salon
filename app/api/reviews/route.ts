@@ -1,4 +1,3 @@
-// app/api/reservations/route.ts
 import { getReviews, postReviews } from '@/drizzle/queries';
 import { NextResponse } from 'next/server';
 
