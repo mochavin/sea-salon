@@ -9,7 +9,7 @@ import {
   users,
 } from './schema';
 import { getServerSession } from 'next-auth';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 // import { InsertUser, usersTable } from './schema';
 
 export async function createUser(data: any) {
@@ -96,10 +96,26 @@ export async function postServices(req: any) {
   }
 }
 
-export async function getBranches() {
-  return await db.select().from(branches);
+export async function getBranchesWithServiceCount() {
+  return await db
+    .select({
+      id: branches.id,
+      name: branches.name,
+      location: branches.location,
+      openingTime: branches.openingTime,
+      closingTime: branches.closingTime,
+      serviceCount: sql<number>`count(${branchesServices.serviceId})`.as(
+        'serviceCount'
+      ),
+    })
+    .from(branches)
+    .leftJoin(
+      branchesServices,
+      sql`${branches.id} = ${branchesServices.branchId}`
+    )
+    .groupBy(branches.id)
+    .orderBy(branches.id);
 }
-
 export async function getBranchById(req: any) {
   try {
     const res = await db.select().from(branches).where(eq(branches.id, req));

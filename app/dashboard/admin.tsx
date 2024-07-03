@@ -3,7 +3,6 @@ import AddServiceForm from '@/components/add-service-form';
 import { ServiceCard } from '@/components/service-card';
 import { ServiceCardSkeleton } from '@/components/service-card-skeleton';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/components/ui/use-toast';
@@ -11,11 +10,14 @@ import { SelectBranch, SelectService } from '@/drizzle/schema';
 import { fetchData } from '@/lib/utils';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
+interface BranchData extends SelectBranch {
+  serviceCount: number;
+}
+
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState('services');
+  const [activeTab, setActiveTab] = useState('branches');
 
   const { data: services, isFetching: isFetchingServices } = useQuery<
     SelectService[]
@@ -26,7 +28,7 @@ export default function AdminDashboard() {
   });
 
   const { data: branches, isFetching: isFetchingBranches } = useQuery<
-    SelectBranch[]
+    BranchData[]
   >({
     queryKey: ['branches'],
     queryFn: () => fetchData('/api/branches'),
@@ -39,29 +41,9 @@ export default function AdminDashboard() {
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className='w-full'>
         <TabsList className='grid w-full grid-cols-2'>
-          <TabsTrigger value='services'>Manage Services</TabsTrigger>
           <TabsTrigger value='branches'>Manage Branches</TabsTrigger>
+          <TabsTrigger value='services'>Manage Services</TabsTrigger>
         </TabsList>
-
-        <TabsContent value='services' className='mt-6'>
-          <div>
-            <AddServiceForm />
-            <h2 className='text-lg font-semibold'>Current Services</h2>
-            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
-              {isFetchingServices ? (
-                Array(6)
-                  .fill(1)
-                  .map((_, index) => <ServiceCardSkeleton key={index} />)
-              ) : services?.length! > 0 ? (
-                services?.map((service) => (
-                  <ServiceCard key={service.id} service={service} />
-                ))
-              ) : (
-                <p className='text-gray-500 col-span-full'>No services found</p>
-              )}
-            </div>
-          </div>
-        </TabsContent>
 
         <TabsContent value='branches' className='mt-6'>
           <div>
@@ -78,6 +60,26 @@ export default function AdminDashboard() {
                 ))
               ) : (
                 <p className='text-gray-500 col-span-full'>No branches found</p>
+              )}
+            </div>
+          </div>
+        </TabsContent>
+
+        <TabsContent value='services' className='mt-6'>
+          <div>
+            <AddServiceForm />
+            <h2 className='text-lg font-semibold'>Current Services</h2>
+            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
+              {isFetchingServices ? (
+                Array(6)
+                  .fill(1)
+                  .map((_, index) => <ServiceCardSkeleton key={index} />)
+              ) : services?.length! > 0 ? (
+                services?.map((service) => (
+                  <ServiceCard key={service.id} service={service} />
+                ))
+              ) : (
+                <p className='text-gray-500 col-span-full'>No services found</p>
               )}
             </div>
           </div>
@@ -99,14 +101,9 @@ const BranchCardSkeleton = () => (
   </div>
 );
 
-const BranchCard = ({ branch }: { branch: SelectBranch }) => {
+const BranchCard = ({ branch }: { branch: BranchData }) => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  const { data: serviceCount, isFetching: isFetchingServiceCount } = useQuery({
-    queryKey: ['serviceCount', branch.id],
-    queryFn: () => fetchData(`/api/branches/${branch.id}`),
-    refetchOnWindowFocus: false,
-  });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
@@ -156,7 +153,9 @@ const BranchCard = ({ branch }: { branch: SelectBranch }) => {
             <p className='text-sm text-gray-500'>{branch.location}</p>
           </div>
           <div className='flex items-center justify-between'>
-            <p className='text-sm text-gray-500'>{serviceCount} Services</p>
+            <p className='text-sm text-gray-500'>
+              {branch.serviceCount} Services
+            </p>
             <p className='text-sm text-gray-500'>
               {formatTime(branch.openingTime)} -{' '}
               {formatTime(branch.closingTime)}
@@ -172,9 +171,11 @@ const BranchCard = ({ branch }: { branch: SelectBranch }) => {
           >
             {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
           </Button>
-          <Button size='sm' variant='outline'>
-            <Link href={`/dashboard/branches?id=${branch.id}`}>Manage</Link>
-          </Button>
+          <Link href={`/dashboard/branches?id=${branch.id}`}>
+            <Button size='sm' variant='outline'>
+              Manage
+            </Button>
+          </Link>
         </div>
       </div>
     </div>

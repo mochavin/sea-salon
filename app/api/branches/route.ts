@@ -1,7 +1,7 @@
 import {
   getBranchById,
   getBranchIdByName,
-  getBranches,
+  getBranchesWithServiceCount,
   postBranches,
 } from '@/drizzle/queries';
 import { NextRequest, NextResponse } from 'next/server';
@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
       const res = await getBranchById(branchId);
       return NextResponse.json(res);
     }
-    const res = await getBranches();
+    const res = await getBranchesWithServiceCount();
     return NextResponse.json(res);
   } catch (error) {
     console.error('Error fetching branches:', error);
