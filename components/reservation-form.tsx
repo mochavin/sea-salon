@@ -24,7 +24,7 @@ import { useToast } from './ui/use-toast';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { SelectBranch } from '@/drizzle/schema';
-import { extractHourMinute } from '@/lib/utils';
+import { extractHourMinute, fetchData } from '@/lib/utils';
 
 const formSchema = z.object({
   branch: z.string().min(1, { message: 'Branch is required' }),
@@ -55,28 +55,19 @@ export default function ReservationForm() {
 
   const { data: branches } = useQuery({
     queryKey: ['branches'],
-    queryFn: async () => {
-      const response = await fetch('/api/branches');
-      return response.json();
-    },
+    queryFn: () => fetchData('/api/branches'),
     refetchOnWindowFocus: false,
   });
 
   const { data: services } = useQuery({
     queryKey: ['services', branchName],
-    queryFn: async () => {
-      const response = await fetch('/api/services?branchName=' + branchName);
-      return response.json();
-    },
+    queryFn: () => fetchData(`/api/services?branchName=${branchName}`),
     refetchOnWindowFocus: false,
   });
 
   const { data: branchData } = useQuery<SelectBranch>({
     queryKey: ['branchesData', branchName],
-    queryFn: async () => {
-      const response = await fetch('/api/branches?branchName=' + branchName);
-      return response.json();
-    },
+    queryFn: () => fetchData(`/api/branches?branchName=${branchName}`),
     refetchOnWindowFocus: false,
   });
 

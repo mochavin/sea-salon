@@ -6,17 +6,14 @@ import { useRouter } from 'next/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import Link from 'next/link';
+import { fetchData } from '@/lib/utils';
 
 export default function CustomerDashboard() {
   const { data: session } = useSession();
   const { data: reservations, isFetching } = useQuery<SelectReservation[]>({
     queryKey: ['reservations'],
-    queryFn: async () => {
-      const response = await fetch(
-        `/api/reservations/?email=${session?.user?.email}`
-      );
-      return response.json();
-    },
+    queryFn: () =>
+      fetchData(`/api/reservations/?email=${session?.user?.email}`),
     refetchOnWindowFocus: false,
   });
 
@@ -72,21 +69,13 @@ const ReservationCard = ({
 }) => {
   const { data: branches } = useQuery<SelectBranch>({
     queryKey: ['branches', reservation.branchId],
-    queryFn: async () => {
-      const response = await fetch(
-        '/api/branches' + '?branchId=' + reservation.branchId
-      );
-      return response.json();
-    },
+    queryFn: () => fetchData(`/api/branches?branchId=${reservation.branchId}`),
     refetchOnWindowFocus: false,
   });
 
   const { data: services } = useQuery<SelectBranch>({
     queryKey: ['services', reservation.branchId],
-    queryFn: async () => {
-      const response = await fetch('/api/services/' + reservation.serviceId);
-      return response.json();
-    },
+    queryFn: () => fetchData(`/api/services/${reservation.serviceId}`),
     refetchOnWindowFocus: false,
   });
 

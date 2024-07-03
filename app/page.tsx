@@ -31,6 +31,7 @@ import Header from '@/components/header';
 import { useQuery } from '@tanstack/react-query';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRouter } from 'next/navigation';
+import { fetchData } from '@/lib/utils';
 
 const HomePage = () => {
   return (
@@ -169,13 +170,7 @@ function Reviews() {
     refetch,
   } = useQuery({
     queryKey: ['reviews'],
-    queryFn: async () => {
-      const response = await fetch('/api/reviews');
-      if (!response.ok) {
-        throw new Error('Failed to fetch reviews');
-      }
-      return response.json();
-    },
+    queryFn: () => fetchData('/api/reviews'),
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();

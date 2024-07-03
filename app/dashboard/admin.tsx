@@ -8,6 +8,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/components/ui/use-toast';
 import { SelectBranch, SelectService } from '@/drizzle/schema';
+import { fetchData } from '@/lib/utils';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -20,10 +21,7 @@ export default function AdminDashboard() {
     SelectService[]
   >({
     queryKey: ['services'],
-    queryFn: async () => {
-      const response = await fetch('/api/services');
-      return response.json();
-    },
+    queryFn: () => fetchData('/api/services'),
     refetchOnWindowFocus: false,
   });
 
@@ -31,10 +29,7 @@ export default function AdminDashboard() {
     SelectBranch[]
   >({
     queryKey: ['branches'],
-    queryFn: async () => {
-      const response = await fetch('/api/branches');
-      return response.json();
-    },
+    queryFn: () => fetchData('/api/branches'),
     refetchOnWindowFocus: false,
   });
 
@@ -107,13 +102,9 @@ const BranchCardSkeleton = () => (
 const BranchCard = ({ branch }: { branch: SelectBranch }) => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  const router = useRouter();
   const { data: serviceCount, isFetching: isFetchingServiceCount } = useQuery({
     queryKey: ['serviceCount', branch.id],
-    queryFn: async () => {
-      const response = await fetch(`/api/branches/${branch.id}`);
-      return response.json();
-    },
+    queryFn: () => fetchData(`/api/branches/${branch.id}`),
     refetchOnWindowFocus: false,
   });
 

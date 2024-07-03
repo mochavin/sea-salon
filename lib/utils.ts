@@ -16,3 +16,8 @@ export function extractHourMinute(timeString: string | undefined) {
   // Return null or a default value if timeString is undefined or not a string
   return null;
 }
+
+export const fetchData = async (url: string) => {
+  const response = await fetch(url);
+  return response.json();
+};

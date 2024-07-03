@@ -27,6 +27,7 @@ import {
 import NoAccess from '@/components/no-access';
 import { ArrowLeftCircleIcon } from 'lucide-react';
 import Link from 'next/link';
+import { fetchData } from '@/lib/utils';
 
 export default function BranchPage() {
   const { data: session } = useSession({
@@ -38,22 +39,15 @@ export default function BranchPage() {
     SelectService[]
   >({
     queryKey: ['branch', 'services', id],
-    queryFn: async () => {
-      const response = await fetch(`/api/services?branchId=${id}`);
-      return response.json();
-    },
+    queryFn: () => fetchData(`/api/services?branchId=${id}`),
     refetchOnWindowFocus: false,
   });
 
-  const { data: branchesData, isFetching: isFetchingBranches } =
-    useQuery<SelectBranch>({
-      queryKey: ['branches', id],
-      queryFn: async () => {
-        const response = await fetch(`/api/branches?branchId=${id}`);
-        return response.json();
-      },
-      refetchOnWindowFocus: false,
-    });
+  const { data: branchesData } = useQuery<SelectBranch>({
+    queryKey: ['branches', id],
+    queryFn: () => fetchData(`/api/branches?branchId=${id}`),
+    refetchOnWindowFocus: false,
+  });
 
   if (session?.user?.role === 'Admin')
     return (
@@ -99,10 +93,7 @@ const AddServiceForm = () => {
   const { toast } = useToast();
   const { data: services } = useQuery({
     queryKey: ['services'],
-    queryFn: async () => {
-      const response = await fetch('/api/services');
-      return response.json();
-    },
+    queryFn: () => fetchData('/api/services'),
     refetchOnWindowFocus: false,
   });
 
