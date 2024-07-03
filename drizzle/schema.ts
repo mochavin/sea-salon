@@ -24,6 +24,7 @@ export const reservations = pgTable('reservations', {
     .notNull(),
   dateTime: text('dateTime'),
   userId: integer('user_id').references(() => users.id),
+  branchId: integer('branch_id').references(() => branches.id),
 });
 
 export const reviews = pgTable('reviews', {
@@ -52,8 +53,8 @@ export const branches = pgTable('branches', {
   id: serial('id').primaryKey(),
   name: text('name').notNull(),
   location: text('location').notNull(),
-  openingTime: time('opening_time').notNull(),
-  closingTime: time('closing_time').notNull(),
+  openingTime: text('opening_time').notNull(),
+  closingTime: text('closing_time').notNull(),
 });
 
 export const branchesServices = pgTable('branches_services', {

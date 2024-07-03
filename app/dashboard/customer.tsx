@@ -1,6 +1,6 @@
 import { useSession } from 'next-auth/react';
 import { useQuery } from '@tanstack/react-query';
-import { SelectReservation } from '@/drizzle/schema';
+import { SelectBranch, SelectReservation } from '@/drizzle/schema';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -70,7 +70,26 @@ const ReservationCard = ({
 }: {
   reservation: SelectReservation;
 }) => {
-  const router = useRouter();
+  const { data: branches } = useQuery<SelectBranch>({
+    queryKey: ['branches', reservation.branchId],
+    queryFn: async () => {
+      const response = await fetch(
+        '/api/branches' + '?branchId=' + reservation.branchId
+      );
+      return response.json();
+    },
+    refetchOnWindowFocus: false,
+  });
+
+  const { data: services } = useQuery<SelectBranch>({
+    queryKey: ['services', reservation.branchId],
+    queryFn: async () => {
+      const response = await fetch('/api/services/' + reservation.serviceId);
+      return response.json();
+    },
+    refetchOnWindowFocus: false,
+  });
+
   const formatDate = (dateTime: string) => {
     const date = new Date(dateTime);
     return {
@@ -83,15 +102,23 @@ const ReservationCard = ({
     <div className='w-full sm:w-1/2 lg:w-1/3 p-2'>
       <Card>
         <CardContent>
-          <div className='p-4 pb-0'>
-            <h5 className='font-bold mb-2'>
-              {formatDate(reservation.dateTime!).date}
-            </h5>
-            <p className='text-sm mb-2'>
-              {formatDate(reservation.dateTime!).time}
-            </p>
-            <p className='mb-2'>Atas Nama: {reservation.name}</p>
-            <p className='mb-2'>Phone: {reservation.phone}</p>
+          <div className='p-4 pb-0 gap-2'>
+            <div className='flex items-center justify-between'>
+              <h5 className='font-bold mb-2'>
+                {formatDate(reservation.dateTime!).date}
+              </h5>
+              <p className='text-sm mb-2'>
+                {formatDate(reservation.dateTime!).time}
+              </p>
+            </div>
+            <div className='flex flex-col mb-2 text-sm opacity-80'>
+              <p className=''>Branch: {branches?.name}</p>
+              <p className=''>Service: {services?.name}</p>
+            </div>
+            <div className='flex flex-col'>
+              <p className=''>Atas Nama: {reservation.name}</p>
+              <p className=''>Phone: {reservation.phone}</p>
+            </div>
           </div>
         </CardContent>
       </Card>

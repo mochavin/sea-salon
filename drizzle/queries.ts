@@ -27,8 +27,16 @@ export async function postReservations(req: any) {
     const serviceId = await db.query.services.findFirst({
       where: eq(services.name, body.service),
     });
+    const branchId = await db.query.branches.findFirst({
+      where: eq(branches.name, body.branch),
+    });
+    body = {
+      ...body,
+      serviceId: serviceId?.id,
+      userId: user?.id,
+      branchId: branchId?.id,
+    };
     console.log('Creating reservation', serviceId, user, body);
-    body = { ...body, serviceId: serviceId?.id, userId: user?.id };
     await db.insert(reservations).values(body);
     return { success: true };
   } catch (error) {

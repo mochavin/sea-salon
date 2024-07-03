@@ -22,3 +22,20 @@ export async function DELETE(
     );
   }
 }
+
+export async function GET(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const id = parseInt(params.id, 10);
+    const res = await db.select().from(services).where(eq(services.id, id));
+    return NextResponse.json(res[0]);
+  } catch (error) {
+    console.error('Error fetching service:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch service' },
+      { status: 500 }
+    );
+  }
+}
