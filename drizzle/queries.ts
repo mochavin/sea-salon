@@ -9,7 +9,7 @@ import {
   users,
 } from './schema';
 import { getServerSession } from 'next-auth';
-import { and, eq, sql } from 'drizzle-orm';
+import { and, desc, eq, sql } from 'drizzle-orm';
 // import { InsertUser, usersTable } from './schema';
 
 export async function createUser(data: any) {
@@ -52,6 +52,27 @@ export async function getReservations(userId: number) {
     .innerJoin(branches, eq(reservations.branchId, branches.id))
     .innerJoin(services, eq(reservations.serviceId, services.id))
     .where(eq(reservations.userId, userId));
+}
+
+export async function deleteReservationById(id: number) {
+  await db.delete(reservations).where(eq(reservations.id, id));
+}
+
+export async function getAllReservations() {
+  return await db
+    .select({
+      id: reservations.id,
+      name: reservations.name,
+      phone: reservations.phone,
+      serviceId: services.name,
+      dateTime: reservations.dateTime,
+      userId: reservations.userId,
+      branchId: reservations.branchId,
+      serviceName: services.name,
+    })
+    .from(reservations)
+    .innerJoin(services, eq(reservations.serviceId, services.id))
+    .orderBy(desc(reservations.dateTime));
 }
 
 export async function postReviews(req: any) {

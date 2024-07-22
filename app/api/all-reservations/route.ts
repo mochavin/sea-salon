@@ -1,4 +1,5 @@
-import { getReservations, postReservations } from '@/drizzle/queries';
+
+import { getAllReservations, getReservations, postReservations } from '@/drizzle/queries';
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOption } from '@/lib/authOptions';
@@ -18,10 +19,8 @@ export async function POST(req: Request) {
 }
 
 export async function GET() {
-  const session = await getServerSession(authOption);
-  const userId = parseInt(session?.user?.id!);
   try {
-    const res = await getReservations(userId);
+    const res = await getAllReservations();
     return NextResponse.json(res);
   } catch (error) {
     console.error('Error fetching reservations:', error);
