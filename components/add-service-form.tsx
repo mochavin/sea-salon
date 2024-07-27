@@ -57,7 +57,7 @@ export default function AddServiceForm() {
   };
 
   return (
-    <div className='p-8 border-solid border border-gray-200 rounded-lg'>
+    <div className='p-8 border-solid border border-gray-200 rounded-lg bg-secondary'>
       <h1 className='text-2xl font-bold mb-4'>Add Service</h1>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
@@ -68,7 +68,7 @@ export default function AddServiceForm() {
               <FormItem>
                 <FormLabel>Service Name</FormLabel>
                 <FormControl>
-                  <Input placeholder='Service Name' {...field} />
+                  <Input className='bg-primary' placeholder='Service Name' {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -84,6 +84,7 @@ export default function AddServiceForm() {
                   <Input
                     type='number'
                     placeholder='Duration'
+                    className='bg-primary'
                     {...field}
                     onChange={(e) => field.onChange(parseInt(e.target.value))}
                   />
@@ -92,7 +93,7 @@ export default function AddServiceForm() {
               </FormItem>
             )}
           />
-          <Button type='submit' disabled={mutation.isPending}>
+          <Button type='submit' disabled={mutation.isPending} className='bg-accent text-primary hover:bg-accent/70'>
             {mutation.isPending ? 'Adding...' : 'Add Service'}
           </Button>
         </form>

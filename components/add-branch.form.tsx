@@ -69,7 +69,7 @@ export default function AddBranchForm() {
   };
 
   return (
-    <div className='p-8 border-solid border border-gray-200 rounded-lg'>
+    <div className='p-8 border-solid border border-gray-200 rounded-lg bg-secondary'>
       <h1 className='text-2xl font-bold mb-4'>Add Branch</h1>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
@@ -80,9 +80,9 @@ export default function AddBranchForm() {
               <FormItem>
                 <FormLabel>Branch Name</FormLabel>
                 <FormControl>
-                  <Input placeholder='Branch Name' {...field} />
+                  <Input className="bg-primary" placeholder='Branch Name' {...field} />
                 </FormControl>
-                <FormMessage />
+                <FormMessage className='text-red-500' />
               </FormItem>
             )}
           />
@@ -93,9 +93,9 @@ export default function AddBranchForm() {
               <FormItem>
                 <FormLabel>Location</FormLabel>
                 <FormControl>
-                  <Input placeholder='Location' {...field} />
+                  <Input className="bg-primary" placeholder='Location' {...field} />
                 </FormControl>
-                <FormMessage />
+                <FormMessage className='text-red-500' />
               </FormItem>
             )}
           />
@@ -106,9 +106,9 @@ export default function AddBranchForm() {
               <FormItem>
                 <FormLabel>Opening Time</FormLabel>
                 <FormControl>
-                  <Input placeholder='08:00' {...field} />
+                  <Input className="bg-primary" placeholder='08:00' {...field} />
                 </FormControl>
-                <FormMessage />
+                <FormMessage className='text-red-500' />
               </FormItem>
             )}
           />
@@ -119,13 +119,13 @@ export default function AddBranchForm() {
               <FormItem>
                 <FormLabel>Closing Time</FormLabel>
                 <FormControl>
-                  <Input placeholder='20:00' {...field} />
+                  <Input className="bg-primary" placeholder='20:00' {...field} />
                 </FormControl>
-                <FormMessage />
+                <FormMessage className='text-red-500' />
               </FormItem>
             )}
           />
-          <Button type='submit' disabled={mutation.isPending}>
+          <Button type='submit' disabled={mutation.isPending} className='bg-accent text-primary hover:bg-accent/70'>
             {mutation.isPending ? 'Adding...' : 'Add Branch'}
           </Button>
         </form>

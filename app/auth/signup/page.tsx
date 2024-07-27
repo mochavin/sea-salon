@@ -17,6 +17,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/components/ui/use-toast';
 import { signIn } from 'next-auth/react';
+import Link from 'next/link';
 
 const signUpSchema = z.object({
   fullName: z.string().min(2, 'Name is too short'),
@@ -74,8 +75,8 @@ export default function SignUp() {
   };
 
   return (
-    <div className='flex justify-center items-center min-h-screen bg-gray-100'>
-      <div className='w-full max-w-md p-8 space-y-3 rounded-xl bg-white shadow-lg'>
+    <div className='flex justify-center items-center min-h-screen bg-secondary'>
+      <div className='w-full max-w-md p-8 rounded-xl bg-primary shadow-lg'>
         <h1 className='text-2xl font-bold text-center'>Sign Up</h1>
         {isFailed && (
           <p className='text-red-500 text-center'>Email already exists</p>
@@ -91,7 +92,7 @@ export default function SignUp() {
                   <FormControl>
                     <Input placeholder='Name' {...field} />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className='text-red-500' />
                 </FormItem>
               )}
             />
@@ -104,7 +105,7 @@ export default function SignUp() {
                   <FormControl>
                     <Input placeholder='Email' {...field} />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className='text-red-500' />
                 </FormItem>
               )}
             />
@@ -117,7 +118,7 @@ export default function SignUp() {
                   <FormControl>
                     <Input placeholder='Phone Number' {...field} />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className='text-red-500' />
                 </FormItem>
               )}
             />
@@ -130,11 +131,17 @@ export default function SignUp() {
                   <FormControl>
                     <Input type='password' placeholder='Password' {...field} />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className='text-red-500' />
                 </FormItem>
               )}
             />
-            <Button type='submit' className='w-full'>
+            <Link
+              href='/auth'
+              className='py-2 text-accent hover:underline text-center'
+            >
+              Already have an account?
+            </Link>
+            <Button type='submit' className='w-full bg-accent text-primary hover:bg-accent/75'>
               {isLoading ? 'Creating Account...' : 'Sign Up'}
             </Button>
           </form>

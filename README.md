@@ -2,6 +2,15 @@
 
 This repository contains the SEA Salon Application, a comprehensive web application for managing salon services, bookings, and customer reviews. The application is built using modern web technologies and follows a robust architecture to ensure scalability and maintainability.
 
+## Demo
+Accounts for the demo video are:
+### Admin
+- Email: thomas.n@compfest.id
+- Password: Admin123
+### User
+- Email: user@demo.com
+- Password: aaaaaa
+
 Click the image below to watch the demo video on YouTube:
 [![demo video](https://img.youtube.com/vi/fuCwaOWZtqI/maxresdefault.jpg)](https://youtu.be/fuCwaOWZtqI)
 

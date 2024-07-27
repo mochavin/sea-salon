@@ -53,7 +53,7 @@ export default function BranchPage() {
     return (
       <div className='container flex flex-col gap-4 py-8'>
         <Link href='/dashboard'>
-          <ArrowLeftCircleIcon className='text-primary mb-4 mr-2' />
+          <ArrowLeftCircleIcon className='text-accent hover:scale-110 duration-300 mb-4 mr-2' />
         </Link>
         <h1 className='text-2xl font-bold'>Branch Dashboard</h1>
         <AddServiceForm />
@@ -138,7 +138,7 @@ const AddServiceForm = () => {
   };
 
   return (
-    <div className='p-8 border-solid border border-gray-200 rounded-lg'>
+    <div className='p-8 border-solid border border-gray-200 rounded-lg bg-secondary'>
       <h1 className='text-2xl font-bold mb-4'>Add Service</h1>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
@@ -150,15 +150,16 @@ const AddServiceForm = () => {
                 <FormLabel>Service Type</FormLabel>
                 <Select onValueChange={field.onChange}>
                   <FormControl>
-                    <SelectTrigger>
+                    <SelectTrigger className='bg-primary'>
                       <SelectValue placeholder='Select a service' />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent>
+                  <SelectContent className='bg-primary'>
                     {services?.map((service: SelectService) => (
                       <SelectItem
                         key={service.id}
                         value={service.id.toString()}
+                        className='text-accent hover:text-primary'
                       >
                         {service.name}
                       </SelectItem>
@@ -169,7 +170,7 @@ const AddServiceForm = () => {
               </FormItem>
             )}
           />
-          <Button type='submit' disabled={mutation.isPending}>
+          <Button type='submit' disabled={mutation.isPending} className='bg-accent text-primary hover:bg-accent/70'>
             {mutation.isPending ? 'Adding...' : 'Add Service'}
           </Button>
         </form>
@@ -222,7 +223,7 @@ const ServiceCard = ({ service }: { service: SelectService }) => {
   };
 
   return (
-    <li className='bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden'>
+    <li className='bg-secondary border border-gray-200 rounded-lg shadow-sm overflow-hidden transition-all duration-100 hover:-translate-y-1 hover:scale-[1.01]'>
       <div className='p-4 flex justify-between items-center'>
         <div className='overflow-hidden'>
           <p className='font-medium truncate'>{service.name}</p>
@@ -230,7 +231,7 @@ const ServiceCard = ({ service }: { service: SelectService }) => {
         </div>
         <Button
           size='sm'
-          variant='destructive'
+          className='bg-red-500 text-primary hover:bg-red-600 transition-all hover:scale-105 duration-300'
           onClick={handleDelete}
           disabled={deleteMutation.isPending}
         >

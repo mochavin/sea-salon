@@ -130,7 +130,7 @@ export default function ReservationForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
+      <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8 bg-primary'>
         <FormField
           control={form.control}
           name='branch'
@@ -143,15 +143,15 @@ export default function ReservationForm() {
                     <SelectValue placeholder='Select a branch' />
                   </SelectTrigger>
                 </FormControl>
-                <SelectContent>
+                <SelectContent className='bg-primary'>
                   {branches?.map((branch: SelectBranch) => (
-                    <SelectItem key={branch.id} value={branch.name}>
+                    <SelectItem key={branch.id} value={branch.name} className='text-accent hover:text-primary'>
                       {branch.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              <FormMessage />
+              <FormMessage className='text-red-500' />
             </FormItem>
           )}
         />
@@ -164,7 +164,7 @@ export default function ReservationForm() {
               <FormControl>
                 <Input placeholder='John Doe' {...field} />
               </FormControl>
-              <FormMessage />
+              <FormMessage className='text-red-500' />
             </FormItem>
           )}
         />
@@ -177,7 +177,7 @@ export default function ReservationForm() {
               <FormControl>
                 <Input placeholder='085123456789' {...field} />
               </FormControl>
-              <FormMessage />
+              <FormMessage className='text-red-500' />
             </FormItem>
           )}
         />
@@ -193,15 +193,15 @@ export default function ReservationForm() {
                     <SelectValue placeholder='Select a service' />
                   </SelectTrigger>
                 </FormControl>
-                <SelectContent>
+                <SelectContent className='bg-primary'>
                   {services?.map((service: any) => (
-                    <SelectItem key={service.id} value={service.name}>
+                    <SelectItem key={service.id} value={service.name} className='text-accent hover:text-primary'>
                       {service.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              <FormMessage />
+              <FormMessage className='text-red-500' />
             </FormItem>
           )}
         />
@@ -214,14 +214,14 @@ export default function ReservationForm() {
               <FormControl>
                 <Input type='datetime-local' {...field} />
               </FormControl>
-              <FormMessage />
+              <FormMessage className='text-red-500' />
             </FormItem>
           )}
         />
         <Button
           type='submit'
           disabled={isSubmitting}
-          className='bg-primary text-primary-foreground'
+          className='bg-accent text-primary hover:bg-accent/70'
         >
           {isSubmitting ? 'Submitting...' : 'Submit Reservation'}
         </Button>

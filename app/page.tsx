@@ -32,12 +32,18 @@ import { useQuery } from '@tanstack/react-query';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRouter } from 'next/navigation';
 import { fetchData } from '@/lib/utils';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 
 const HomePage = () => {
+  useEffect(() => {
+    AOS.init({duration: 1200,});
+  }, []);
+
   return (
-    <div className='min-h-screen bg-secondary'>
+    <div className='min-h-screen bg-primary'>
       <section className='text-center mb-12 relative'>
-        <div className='relative w-full h-64 rounded-lg shadow-lg mb-6 overflow-hidden'>
+        <div className='relative w-full h-96 rounded-lg shadow-lg mb-6 overflow-hidden'>
           <Image
             src='/assets/banner.png'
             alt='SEA Salon'
@@ -46,54 +52,71 @@ const HomePage = () => {
             className='rounded-lg'
           />
         </div>
-        <div className='absolute inset-0 bg-primary/75 flex items-center justify-center'>
-          <div>
-            <h2 className='text-4xl font-bold text-secondary mb-4'>
-              Beauty and Elegance Redefined
+        <div className='absolute inset-0 bg-primary/60 flex items-center justify-center'>
+          <div className='px-4'>
+            <h2 className='text-5xl font-extrabold text-accent mb-4 tracking-wide' data-aos="zoom-out">
+              <span className='bg-gradient-to-bl from-pink-700 to-purple-700 bg-clip-text text-transparent'>
+                Beauty{' '}
+              </span>
+              and{' '}
+              <span className='italic bg-gradient-to-l from-accent to-accent/60 bg-clip-text text-transparent'>
+                Elegance{' '}
+              </span>
+              Redefined
             </h2>
-            <p className='text-xl text-secondary'>
-              Welcome to SEA Salon, where we transform your look and boost your
-              confidence.
+            <p className='text-xl text-accent font-semibold'>
+              Welcome to{' '}
+              <span className='font-extrabold text-3xl italic bg-gradient-to-l from-accent to-accent/60 bg-clip-text text-transparent'>
+                SEA Salon{' '}
+              </span>
+              , where
+              we{' '}
+              <span className='font-medium'>transform your look</span>{' '}
+              and{' '}
+              <span className='font-medium'>
+                boost your confidence
+              </span>
+              .
             </p>
           </div>
         </div>
       </section>
-      <main className='container mx-auto px-8 py-8 '>
-        <section id='services' className='mb-12'>
-          <h3 className='text-2xl font-semibold text-primary mb-6'>
+      <main className='mx-auto py-8'>
+        <section id='services' className='mb-12 container'>
+          <h3 className='text-2xl font-semibold text-accent mb-6'>
             Our Services
           </h3>
           <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
-            <Card className='bg-primary-foreground '>
+            <Card className='bg-secondary hover:bg-accent/20 transition-all duration-100 hover:-translate-y-1 hover:scale-[1.01]'>
               <CardHeader>
-                <CardTitle className='flex items-center text-primary'>
+                <CardTitle className='flex items-center text-accent'>
                   <Scissors className='mr-2' />
-                  Haircuts and Styling
+                  <span className='bg-gradient-to-bl from-red-700 to-black py-1 bg-clip-text text-transparent'>Haircuts and Styling</span>
                 </CardTitle>
               </CardHeader>
-              <CardContent className='text-primary'>
+              <CardContent className='text-accent'>
                 <p>Professional cuts and styles for all hair types.</p>
               </CardContent>
             </Card>
-            <Card className='bg-primary-foreground '>
+            <Card className='bg-secondary hover:bg-accent/20 transition-all duration-100 hover:-translate-y-1 hover:scale-[1.01]'>
               <CardHeader>
-                <CardTitle className='flex items-center text-primary'>
+                <CardTitle className='flex items-center text-accent'>
                   <Brush className='mr-2' />
-                  Manicure and Pedicure
+                  <span className='bg-gradient-to-bl from-blue-700 to-black py-1 bg-clip-text text-transparent'>Manicure and Pedicure</span>
                 </CardTitle>
               </CardHeader>
-              <CardContent className='text-primary'>
+              <CardContent className='text-accent'>
                 <p>Pamper your hands and feet with our nail care services.</p>
               </CardContent>
             </Card>
-            <Card className='bg-primary-foreground '>
+            <Card className='bg-secondary hover:bg-accent/20 transition-all duration-100 hover:-translate-y-1 hover:scale-[1.01]'>
               <CardHeader>
-                <CardTitle className='flex items-center text-primary'>
+                <CardTitle className='flex items-center text-accent'>
                   <Sparkles className='mr-2' />
-                  Facial Treatments
+                  <span className='bg-gradient-to-bl from-blue-700 to-purple-700 py-1 bg-clip-text text-transparent'>Facial Treatments</span>
                 </CardTitle>
               </CardHeader>
-              <CardContent className='text-primary'>
+              <CardContent className='text-accent'>
                 <p>
                   Rejuvenate your skin with our specialized facial treatments.
                 </p>
@@ -102,45 +125,49 @@ const HomePage = () => {
           </div>
         </section>
 
-        <section id='contact' className='mb-12'>
-          <h3 className='text-2xl font-semibold text-primary mb-6'>
-            Contact Us
-          </h3>
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-            <Card className='bg-primary-foreground'>
-              <CardHeader>
-                <CardTitle className='text-primary'>Thomas</CardTitle>
-              </CardHeader>
-              <CardContent className='text-primary'>
-                <p className='flex items-center'>
-                  <Phone className='mr-2' />
-                  08123456789
-                </p>
-              </CardContent>
-            </Card>
-            <Card className='bg-primary-foreground'>
-              <CardHeader>
-                <CardTitle className='text-primary'>Sekar</CardTitle>
-              </CardHeader>
-              <CardContent className='text-primary'>
-                <p className='flex items-center'>
-                  <Phone className='mr-2' />
-                  08164829372
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        </section>
-
-        <div className='text-center'>
-          <Button className='bg-primary hover:bg-primary/90 text-secondary'>
+        <div className='text-center my-16'>
+          <Button className='bg-accent hover:bg-accent/75 text-primary transition-all hover:scale-105 duration-300'>
             <Link href='/dashboard/reservation'>Book an Appointment</Link>
           </Button>
         </div>
+
+        <section id='contact' className='mb-12 bg-accent text-primary'>
+          <div className='container mx-auto px-4 py-16'>
+            <h3 className='text-2xl font-semibold mb-6'>
+              Contact Us
+            </h3>
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+              <Card className='bg-secondary hover:bg-primary transition-all duration-100 hover:-translate-y-1 hover:scale-[1.01]' data-aos="flip-left">
+                <CardHeader>
+                  <CardTitle className='text-accent'>Thomas</CardTitle>
+                </CardHeader>
+                <CardContent className='text-accent'>
+                  <p className='flex items-center'>
+                    <Phone className='mr-2' />
+                    08123456789
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className='bg-secondary hover:bg-primary transition-all duration-100 hover:-translate-y-1 hover:scale-[1.01]' data-aos="flip-left">
+                <CardHeader>
+                  <CardTitle className='text-accent'>Sekar</CardTitle>
+                </CardHeader>
+                <CardContent className='text-accent'>
+                  <p className='flex items-center'>
+                    <Phone className='mr-2' />
+                    08164829372
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </section>
+
+
         <Reviews />
       </main>
 
-      <footer className='bg-primary text-secondary py-4 mt-12'>
+      <footer className='bg-primary text-accent border-t-2 border-accent py-4 mt-12'>
         <div className='container mx-auto px-4 text-center'>
           <p>&copy; 2024 SEA Salon. All rights reserved.</p>
         </div>
@@ -213,120 +240,123 @@ function Reviews() {
   }
 
   return (
-    <section id='reviews' className='my-12'>
-      <h3 className='text-2xl font-semibold text-primary mb-6'>
-        Customer Reviews
-      </h3>
+    <section id='reviews'>
+      <div className='container mx-auto px-4'>
+        <h3 className='text-2xl font-semibold text-accent mb-6'>
+          Customer Reviews
+        </h3>
 
-      <Card className='bg-secondary mb-6'>
-        <CardHeader>
-          <CardTitle className='text-primary'>Leave a Review</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
-              <FormField
-                control={form.control}
-                name='customerName'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className='text-primary'>Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder='Your name' {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='starRating'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className='text-primary'>Rating</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
+        <Card className='bg-secondary mb-6'>
+          <CardHeader>
+            <CardTitle className='text-accent'>Leave a Review</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
+                <FormField
+                  control={form.control}
+                  name='customerName'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className='text-accent'>Name</FormLabel>
                       <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder='Select a rating' />
-                        </SelectTrigger>
+                        <Input className='bg-primary' placeholder='Your name' {...field} />
                       </FormControl>
-                      <SelectContent>
-                        {[1, 2, 3, 4, 5].map((num) => (
-                          <SelectItem key={num} value={num.toString()}>
-                            {num} Star{num !== 1 ? 's' : ''}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='comment'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className='text-primary'>Comment</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder='Tell us about your experience'
-                        className='resize-none'
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button
-                type='submit'
-                className={`bg-primary text-primary-foreground ${
-                  isSubmitting ? 'cursor-not-allowed bg-secondary' : ''
-                }`}
-              >
-                Submit Review
-              </Button>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
+                      <FormMessage className='text-red-500' />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name='starRating'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Rating</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger className='bg-primary'>
+                            <SelectValue placeholder='Select a rating' />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {[1, 2, 3, 4, 5].map((num) => (
+                            <SelectItem key={num} value={num.toString()} className='text-accent bg-primary hover:bg-primary/90 hover:text-primary'>
+                              {num} Star{num !== 1 ? 's' : ''}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage className='text-red-500' />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name='comment'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className='text-accent'>Comment</FormLabel>
+                      <FormControl className='bg-primary'>
+                        <Textarea
+                          placeholder='Tell us about your experience'
+                          className='resize-none'
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage className='text-red-500' />
+                    </FormItem>
+                  )}
+                />
+                <Button
+                  type='submit'
+                  className={`bg-accent text-primary hover:bg-accent/70 ${isSubmitting ? 'cursor-not-allowed bg-secondary' : ''
+                    }`}
+                >
+                  {isSubmitting ? 'Submitting...' : 'Submit Review'}
+                </Button>
+              </form>
+            </Form>
+          </CardContent>
+        </Card>
+      </div>
 
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-        {isFetching ? (
-          <>
-            <div className='w-full p-4 justify-between'>
-              <Skeleton className='h-32 w-full bg-primary/30' />
-            </div>
-            <div className='w-full p-4 justify-between'>
-              <Skeleton className='h-32 w-full bg-primary/30' />
-            </div>
-          </>
-        ) : (
-          reviews?.map((review: any, index: number) => (
-            <Card key={index} className='bg-secondary'>
-              <CardHeader>
-                <CardTitle className='text-primary flex items-center justify-between'>
-                  <span>{review.customerName}</span>
-                  <span className='flex items-center'>
-                    {[...Array(review.starRating)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className='w-5 h-5 fill-primary text-primary'
-                      />
-                    ))}
-                  </span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className='text-primary'>
-                <p>{review.comment}</p>
-              </CardContent>
-            </Card>
-          ))
-        )}
+      <div className='bg-accent text-primary py-16'>
+        <div className='contgainer mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-6 '>
+          {isFetching ? (
+            <>
+              <div className='w-full p-4 justify-between'>
+                <Skeleton className='h-32 w-full bg-primary/30' />
+              </div>
+              <div className='w-full p-4 justify-between'>
+                <Skeleton className='h-32 w-full bg-primary/30' />
+              </div>
+            </>
+          ) : (
+            reviews?.map((review: any, index: number) => (
+              <Card key={index} className='bg-secondary' data-aos="fade-up">
+                <CardHeader>
+                  <CardTitle className='text-accent flex items-center justify-between'>
+                    <span>{review.customerName}</span>
+                    <span className='flex items-center'>
+                      {[...Array(review.starRating)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className='w-5 h-5 fill-accent'
+                        />
+                      ))}
+                    </span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className='text-accent'>
+                  <p>{review.comment}</p>
+                </CardContent>
+              </Card>
+            ))
+          )}
+        </div>
       </div>
     </section>
   );

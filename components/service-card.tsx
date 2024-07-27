@@ -38,7 +38,7 @@ export const ServiceCard = ({ service }: { service: SelectService }) => {
   };
 
   return (
-    <div className='bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden'>
+    <div className='bg-secondary border border-gray-200 rounded-lg shadow-sm overflow-hidden transition-all duration-100 hover:-translate-y-1 hover:scale-[1.01]'>
       <div className='p-4 flex justify-between items-center'>
         <div className='overflow-hidden'>
           <p className='font-medium truncate'>{service.name}</p>
@@ -46,7 +46,7 @@ export const ServiceCard = ({ service }: { service: SelectService }) => {
         </div>
         <Button
           size='sm'
-          variant='destructive'
+          className='bg-red-500 text-primary hover:bg-red-600 transition-all hover:scale-105 duration-300'
           onClick={handleDelete}
           disabled={deleteMutation.isPending}
         >

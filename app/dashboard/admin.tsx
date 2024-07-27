@@ -56,9 +56,9 @@ export default function AdminDashboard() {
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className='w-full'>
         <TabsList className='grid w-full md:grid-cols-3 grid-cols-2 max-md:grid-rows-2 h-full'>
-          <TabsTrigger value='reservations' className='w-full max-md:col-span-2 max-md:order-last'>Reservations</TabsTrigger>
-          <TabsTrigger value='branches' className='w-full'>Branches</TabsTrigger>
-          <TabsTrigger value='services' className='w-full'>Services</TabsTrigger>
+          <TabsTrigger value='reservations' className='w-full border border-accent data-[state=active]:bg-accent data-[state=active]:text-primary max-md:col-span-2 max-md:order-last'>Reservations</TabsTrigger>
+          <TabsTrigger value='branches' className='w-full border border-accent data-[state=active]:bg-accent data-[state=active]:text-primary'>Branches</TabsTrigger>
+          <TabsTrigger value='services' className='w-full border border-accent data-[state=active]:bg-accent data-[state=active]:text-primary'>Services</TabsTrigger>
         </TabsList>
 
         <TabsContent value='reservations' className='mt-8'>
@@ -133,7 +133,7 @@ export default function AdminDashboard() {
 }
 
 const BranchCardSkeleton = () => (
-  <div className='bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden'>
+  <div className='bg-secondary border border-gray-200 rounded-lg shadow-sm overflow-hidden'>
     <div className='p-4 flex justify-between items-center'>
       <div className='overflow-hidden w-2/3'>
         <Skeleton className='h-5 w-full mb-2' />
@@ -188,7 +188,7 @@ const BranchCard = ({ branch }: { branch: BranchData }) => {
   };
 
   return (
-    <div className='bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden'>
+    <div className='bg-secondary border border-gray-200 rounded-lg shadow-sm overflow-hidden transition-all duration-100 hover:-translate-y-1 hover:scale-[1.01]'>
       <div className='p-4 flex justify-between items-center'>
         <div className='overflow-hidden flex flex-col w-full px-4'>
           <div className='flex items-center justify-between'>
@@ -208,14 +208,14 @@ const BranchCard = ({ branch }: { branch: BranchData }) => {
         <div className='flex gap-2 flex-col'>
           <Button
             size='sm'
-            variant='destructive'
+            className='bg-red-500 text-primary hover:bg-red-600 transition-all hover:scale-105 duration-300'
             onClick={handleDelete}
             disabled={deleteMutation.isPending}
           >
             {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
           </Button>
           <Link href={`/dashboard/branches?id=${branch.id}`}>
-            <Button size='sm' variant='outline'>
+            <Button size='sm' className='bg-primary text-accent hover:bg-primary/80 transition-all hover:scale-105 duration-300'>
               Manage
             </Button>
           </Link>
@@ -226,7 +226,7 @@ const BranchCard = ({ branch }: { branch: BranchData }) => {
 };
 
 const ReservationCardSkeleton = () => (
-  <div className='bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden'>
+  <div className='bg-secondary border border-gray-200 rounded-lg shadow-sm overflow-hidden m-8'>
     <div className='p-4 flex justify-between items-center'>
       <div className='overflow-hidden w-2/3'>
         <Skeleton className='h-5 w-full mb-2' />
@@ -274,7 +274,7 @@ const ReservationCard = ({ reservation }: { reservation: ReservationData }) => {
   const isPast = new Date(reservation.dateTime as string) < new Date();
 
   return (
-    <div className={`border border-gray-200 rounded-lg shadow-sm overflow-hidden ${isPast ? 'bg-gray-50' : 'bg-white'}`}>
+    <div className={`border border-gray-200 rounded-lg shadow-sm overflow-hidden ${isPast ? 'bg-accent/20' : 'bg-secondary'} transition-all duration-100 hover:-translate-y-1 hover:scale-[1.01]`}>
       <div className='p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4'>
         <div className='overflow-hidden flex flex-col w-full'>
           <div className='flex items-center justify-between'>
@@ -293,7 +293,7 @@ const ReservationCard = ({ reservation }: { reservation: ReservationData }) => {
         <div className='flex gap-2 sm:flex-col'>
           <Button
             size='sm'
-            variant='destructive'
+            className='bg-red-500 text-primary hover:bg-red-600 transition-all hover:scale-105 duration-300'
             onClick={handleDelete}
             disabled={deleteMutation.isPending}
           >

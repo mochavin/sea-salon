@@ -13,7 +13,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className='p-8'>
+    <div className='p-8 bg-primary'>
       {session?.user?.role === 'Admin' ? (
         <AdminDashboard />
       ) : (

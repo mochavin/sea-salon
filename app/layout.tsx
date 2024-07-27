@@ -29,6 +29,8 @@ export default function RootLayout({
       >
         <Provider>
           <Header />
+          <div className='mb-16'>
+          </div>
           {children} <Toaster />
         </Provider>
       </body>

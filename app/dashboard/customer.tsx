@@ -63,7 +63,7 @@ export default function CustomerDashboard() {
         </>
       )}
 
-      <Button className='mt-4 w-full sm:w-auto'>
+      <Button className='mt-4 w-full sm:w-auto bg-accent text-primary hover:bg-accent/70'>
         <Link href='/dashboard/reservation'>Make Reservation</Link>
       </Button>
     </div>
@@ -73,7 +73,7 @@ export default function CustomerDashboard() {
 const ReservationCard = ({ reservation }: { reservation: ReservationData }) => {
   return (
     <div className='w-full sm:w-1/2 lg:w-1/3 p-2'>
-      <Card>
+      <Card className='bg-secondary hover:bg-accent/20 transition-all duration-100 hover:-translate-y-1 hover:scale-[1.01]'>
         <CardContent>
           <div className='p-4 pb-0 gap-2'>
             <div className='flex items-center justify-between'>

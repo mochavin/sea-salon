@@ -59,8 +59,8 @@ export default function SignIn() {
   };
 
   return (
-    <div className='flex justify-center items-center min-h-screen bg-gray-100'>
-      <div className='w-full max-w-md p-8 space-y-3 rounded-xl bg-white shadow-lg'>
+    <div className='flex justify-center items-center min-h-screen bg-secondary'>
+      <div className='w-full max-w-md p-8 space-y-3 rounded-xl bg-primary shadow-lg'>
         <h1 className='text-2xl font-bold text-center'>Sign In</h1>
         {isFailed && (
           <p className='text-red-500 text-center'>Invalid email or password</p>
@@ -76,7 +76,7 @@ export default function SignIn() {
                   <FormControl>
                     <Input placeholder='Email' {...field} />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className='text-red-500' />
                 </FormItem>
               )}
             />
@@ -89,17 +89,17 @@ export default function SignIn() {
                   <FormControl>
                     <Input type='password' placeholder='Password' {...field} />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className='text-red-500' />
                 </FormItem>
               )}
             />
             <Link
               href='/auth/signup'
-              className='py-2 text-blue-500 hover:underline text-center'
+              className='py-2 text-accent hover:underline text-center'
             >
               Create an account
             </Link>
-            <Button type='submit' className='w-full'>
+            <Button type='submit' className='w-full bg-accent text-primary hover:bg-accent/75'>
               {isLoading ? 'Loading...' : 'Sign In'}
             </Button>
           </form>
