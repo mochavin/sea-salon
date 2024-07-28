@@ -12,7 +12,7 @@ Accounts for the demo video are:
 - Password: aaaaaa
 
 Click the image below to watch the demo video on YouTube:
-[![demo video](https://img.youtube.com/vi/fuCwaOWZtqI/maxresdefault.jpg)](https://youtu.be/fuCwaOWZtqI)
+[![demo video](https://img.youtube.com/vi/8zxoXRurn9s/maxresdefault.jpg)](https://youtu.be/8zxoXRurn9s)
 
 ## Technologies Used
 
